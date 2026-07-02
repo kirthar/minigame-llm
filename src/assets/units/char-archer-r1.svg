@@ -1,0 +1,81 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Archer, Rank 1 / Tier 1 "Early Medieval" — right-facing novice scout-archer, slight crouch/aim stance -->
+
+  <!-- ground contact shadow -->
+  <ellipse cx="100" cy="188" rx="40" ry="7" fill="#000000" opacity="0.25"/>
+
+  <g id="body">
+    <g id="legs">
+      <!-- back (trailing) leg, bent for crouch -->
+      <path d="M91,112 L87,156 Q86,167 93,169 L103,169 Q105,165 101,159 L100,112 Z" fill="#4a4652"/>
+      <ellipse cx="95" cy="173" rx="10" ry="6" fill="#232733"/>
+
+      <!-- front (leading) leg, wider stance for stability while aiming -->
+      <path d="M113,112 L128,150 Q131,163 122,168 L108,168 Q105,163 110,155 L111,112 Z" fill="#6b6774"/>
+      <ellipse cx="119" cy="172" rx="11" ry="7" fill="#232733"/>
+      <ellipse cx="118" cy="138" rx="8" ry="5" fill="#c7c3ce" opacity="0.45"/>
+    </g>
+
+    <!-- quiver on the back, a few arrows visible (drawn behind torso) -->
+    <g transform="rotate(-13 73 74)">
+      <rect x="65" y="50" width="15" height="47" rx="7" fill="#5c4a3a"/>
+      <rect x="65" y="50" width="6" height="47" rx="3" fill="#46362a"/>
+    </g>
+    <line x1="65" y1="53" x2="58" y2="29" stroke="#c7c3ce" stroke-width="3" stroke-linecap="round"/>
+    <line x1="71" y1="50" x2="68" y2="24" stroke="#c7c3ce" stroke-width="3" stroke-linecap="round"/>
+    <line x1="77" y1="52" x2="79" y2="27" stroke="#c7c3ce" stroke-width="3" stroke-linecap="round"/>
+    <polygon points="58,29 53,23 61,25" fill="#8a8694"/>
+    <polygon points="68,24 63,18 72,20" fill="#8a8694"/>
+    <polygon points="79,27 75,20 84,23" fill="#8a8694"/>
+
+    <!-- faction sash: sole army-accent element (diagonal chest strap) -->
+    <polygon id="army-accent" fill="#4da3ff" points="90,57 100,57 122,105 112,110"/>
+
+    <!-- torso: light leather/cloth tunic, no metal armor -->
+    <rect x="82" y="58" width="44" height="52" rx="14" fill="#8a8694"/>
+    <rect x="84" y="60" width="40" height="15" rx="10" fill="#c7c3ce" opacity="0.45"/>
+    <path d="M82,100 Q104,110 126,100 L126,110 Q104,118 82,110 Z" fill="#6b6774"/>
+
+    <!-- belt -->
+    <rect x="80" y="106" width="48" height="8" rx="3" fill="#4a4652"/>
+    <rect x="99" y="105" width="10" height="10" rx="2" fill="#c7c3ce"/>
+
+    <!-- neck -->
+    <rect x="102" y="48" width="12" height="8" fill="#e0b088"/>
+
+    <!-- head with simple hood -->
+    <circle cx="108" cy="38" r="14" fill="#e0b088"/>
+    <path d="M90,44 Q86,14 108,12 Q130,14 126,44 Z" fill="#8a8694"/>
+    <path d="M94,44 Q92,22 108,20 Q124,22 122,44 Q124,32 108,28 Q92,32 94,44 Z" fill="#1f2430"/>
+    <path d="M96,42 Q108,48 120,42 L120,46 Q108,52 96,46 Z" fill="#141821"/>
+    <path d="M92,20 L78,8 L96,18 Z" fill="#6b6774"/>
+    <ellipse cx="101" cy="22" rx="6" ry="3" fill="#c7c3ce" opacity="0.5"/>
+  </g>
+
+  <g id="weapon-arm">
+    <!-- draw arm: hand pulled back with the nocked arrow -->
+    <path d="M98,66 Q92,74 96,82 Q99,88 106,86 L112,82 Q110,74 104,68 Z" fill="#6b6774"/>
+    <circle cx="114" cy="80" r="6" fill="#e0b088"/>
+
+    <!-- nocked arrow, drawn back and aimed forward -->
+    <line x1="110" y1="80" x2="178" y2="80" stroke="#c7c3ce" stroke-width="3" stroke-linecap="round"/>
+    <polygon points="178,80 169,75 169,85" fill="#4a4652"/>
+    <polygon points="110,80 118,75 118,85" fill="#8a8694"/>
+
+    <!-- basic short bow -->
+    <path d="M142,42 Q172,80 142,118" fill="none" stroke="#7a5c3e" stroke-width="7" stroke-linecap="round"/>
+    <path d="M140,44 Q168,80 140,116" fill="none" stroke="#9c7a52" stroke-width="2" stroke-linecap="round"/>
+    <path d="M142,42 L118,80 L142,118" fill="none" stroke="#232733" stroke-width="1.5"/>
+
+    <!-- bow-hand arm gripping the bow -->
+    <path d="M120,64 Q136,64 142,76 Q144,82 138,84 L133,80 Q128,70 116,70 Z" fill="#9a96a3"/>
+    <circle cx="141" cy="79" r="6" fill="#e0b088"/>
+    <rect x="137" y="76" width="8" height="8" rx="2" fill="#4a4652"/>
+  </g>
+
+  <!-- rank badge (bottom-right, clear of the bow and arrow) -->
+  <g id="rank-badge">
+    <circle cx="178" cy="176" r="11" fill="#0b0e12"/>
+    <text x="178" y="181" font-family="system-ui, sans-serif" font-size="15" font-weight="bold" fill="#e6edf3" text-anchor="middle">1</text>
+  </g>
+</svg>

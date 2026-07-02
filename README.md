@@ -47,10 +47,19 @@ motor ni el render.
 
 ## Representación visual
 
-- **Forma** = tipo: triángulo (arquero), círculo (ligera), cuadrado (pesada),
-  rombo (caballería).
-- **Color** = ejército. **Grosor del borde** = rango. Barra de HP sobre cada unidad.
-- (Más adelante se sustituirán por sprites con animaciones.)
+- Cada unidad se dibuja con un **sprite ilustrado flat-vector** propio de su
+  tipo (arquero, infantería ligera, infantería pesada, caballería), mirando a
+  la derecha por defecto y **volteado horizontalmente** cuando se mueve hacia
+  la izquierda. Tienen una animación simple por estado (reposo, movimiento,
+  ataque) calculada en el render a partir de la orden ejecutada ese turno.
+- **Color de ejército** = un único elemento de acento recoloreado en tiempo de
+  carga (`src/render/spriteLoader.ts`). **Insignia de rango** = círculo con el
+  número, dibujado aparte para que sea correcto en cualquier rango aunque hoy
+  sólo exista arte de rango 1 (rangos 2–5 reutilizan ese mismo dibujo hasta
+  que se ilustren variantes propias). Barra de HP sobre cada unidad.
+- Si el sprite de una unidad aún no ha terminado de decodificar ese frame, se
+  usa como respaldo la figura geométrica original (forma = tipo, color =
+  ejército).
 
 ## Arquitectura
 

@@ -87,9 +87,13 @@ export class Simulation {
       const t = Math.min(1, this.active.elapsed / duration);
       this.renderer.draw(this.engine.state, {
         startPositions: this.active.result.startPositions,
+        unitActions: this.active.result.unitActions,
         t,
+        ts,
       });
       if (t >= 1) this.active = null;
+    } else {
+      this.renderer.draw(this.engine.state, { ts });
     }
 
     if (this.engine.state.finished && this.playing) {

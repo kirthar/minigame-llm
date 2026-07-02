@@ -44,6 +44,8 @@ export interface TurnResult {
   events: GameEvent[];
   /** Posiciones de cada unidad ANTES de la fase de movimiento (para animar). */
   startPositions: Map<UnitId, Vec2>;
+  /** Orden resuelta que ejecutó cada unidad viva este turno (para animar el estado: ataque/movimiento/reposo). */
+  unitActions: Map<UnitId, OrderType>;
 }
 
 /**
@@ -139,8 +141,10 @@ export class GameEngine {
       if (u.alive) startPositions.set(u.id, { ...u.pos });
     }
 
+    const unitActions = new Map<UnitId, OrderType>();
+
     if (this.state.finished) {
-      return { turn: this.state.turn, events, startPositions };
+      return { turn: this.state.turn, events, startPositions, unitActions };
     }
 
     this.unitIndex = new Map(this.state.units.map((u) => [u.id, u]));
@@ -171,6 +175,7 @@ export class GameEngine {
       if (!u.alive) continue;
       u.distanceMovedThisTurn = 0;
       const order = orderOf(u);
+      unitActions.set(u.id, order.kind);
       const dest = desiredDestination(u, order, this.state.units);
       if (!dest) continue;
       const stopWithin = this.stopDistanceFor(u, order);
@@ -253,7 +258,7 @@ export class GameEngine {
     // 5. Condición de victoria.
     this.checkVictory(events);
 
-    return { turn: this.state.turn, events, startPositions };
+    return { turn: this.state.turn, events, startPositions, unitActions };
   }
 
   // --- Helpers de combate/movimiento ---
