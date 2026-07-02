@@ -1,5 +1,6 @@
 import { HeuristicAgent, type Doctrine } from "./HeuristicAgent.ts";
 import { UtilityAgent } from "./UtilityAgent.ts";
+import { MockLlmAgent } from "./llm/MockLlmAgent.ts";
 import type { Agent, AgentFactory } from "./Agent.ts";
 
 /**
@@ -12,6 +13,7 @@ export const AGENT_REGISTRY: Record<string, AgentFactory> = {
   balanced: () => new HeuristicAgent("balanced"),
   cavalry: () => new HeuristicAgent("cavalry"),
   ranged: () => new HeuristicAgent("ranged"),
+  "llm-mock": () => new MockLlmAgent(),
 };
 
 /**
@@ -24,5 +26,5 @@ export function defaultAgentFor(index: number): Agent {
   return new UtilityAgent(`Utilidad ${index}`);
 }
 
-export { HeuristicAgent, UtilityAgent };
+export { HeuristicAgent, UtilityAgent, MockLlmAgent };
 export type { Doctrine };

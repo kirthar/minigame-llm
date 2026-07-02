@@ -2,10 +2,30 @@ import type { GameEvent } from "../engine/events.ts";
 import type { GameState } from "./GameState.ts";
 import type { ArmyId } from "./types.ts";
 
+/**
+ * Propone una alianza con `withArmyId`. Solo se forma si ambos ejércitos se
+ * proponen mutuamente en el MISMO turno (ver `resolveDiplomacy`); si solo uno
+ * de los dos propone, no pasa nada esa vez, pero como `planDiplomacy` se
+ * reevalúa cada turno, repetir la propuesta turno a turno es la forma normal
+ * de "seguir abierto" a la alianza hasta que el otro también proponga.
+ */
+export interface ProposeAllianceIntent {
+  kind: "propose";
+  withArmyId: ArmyId;
+}
+
+/**
+ * Rompe unilateralmente una alianza activa con `withArmyId` (sin penalización:
+ * a diferencia de atacar a un aliado, esto no cuenta como traición ni afecta
+ * a `reputations`). No tiene efecto si no había alianza activa con ese ejército.
+ */
+export interface BreakAllianceIntent {
+  kind: "break";
+  withArmyId: ArmyId;
+}
+
 /** Intención diplomática que un agente puede emitir en `planDiplomacy`. */
-export type DiplomacyIntent =
-  | { kind: "propose"; withArmyId: ArmyId }
-  | { kind: "break"; withArmyId: ArmyId };
+export type DiplomacyIntent = ProposeAllianceIntent | BreakAllianceIntent;
 
 /** Clave canónica (no dirigida) para un par de ejércitos. */
 export function pairKey(a: ArmyId, b: ArmyId): string {
