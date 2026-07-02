@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <title>Cavalry - Rank 4 (Transición Moderna)</title>
+
+  <!-- ground contact shadow -->
+  <ellipse cx="104" cy="193" rx="78" ry="6" fill="#0b0e12" opacity="0.3"/>
+
+  <!-- ===================== MOTORCYCLE WHEELS (was horse legs) ===================== -->
+  <g id="legs">
+    <circle cx="64" cy="172" r="24" fill="#2b2f33"/>
+    <circle cx="64" cy="172" r="24" fill="none" stroke="#55595e" stroke-width="5"/>
+    <circle cx="64" cy="172" r="8" fill="#55595e"/>
+
+    <circle cx="140" cy="172" r="24" fill="#2b2f33"/>
+    <circle cx="140" cy="172" r="24" fill="none" stroke="#55595e" stroke-width="5"/>
+    <circle cx="140" cy="172" r="8" fill="#55595e"/>
+
+    <rect x="86" y="150" width="36" height="10" rx="4" fill="#3a3e42"/>
+  </g>
+
+  <!-- ===================== MOTORCYCLE BODY (frame/tank was torso, fork was neck, headlight was head, exhaust was tail) ===================== -->
+  <g id="body">
+    <!-- exhaust pipe (was tail) -->
+    <path d="M52,100 C36,96 26,110 30,130 C32,144 42,150 52,146 C46,130 46,114 52,100 Z" fill="#2b2f33"/>
+    <circle cx="34" cy="128" r="5" fill="#55595e"/>
+
+    <!-- main chassis / fuel-tank frame (was torso) -->
+    <rect x="48" y="96" width="100" height="58" rx="18" fill="#3a3e42"/>
+    <rect x="48" y="134" width="100" height="22" rx="14" fill="#2b2f33" opacity="0.9"/>
+    <ellipse cx="88" cy="106" rx="32" ry="10" fill="#55595e" opacity="0.4"/>
+    <!-- tactical khaki seat cover -->
+    <rect x="52" y="136" width="88" height="14" rx="7" fill="#6b6558"/>
+
+    <!-- front fork / steering mast (was neck) -->
+    <polygon points="146,58 128,102 152,110 172,55" fill="#3a3e42"/>
+    <polygon points="146,58 172,55 166,66 150,70" fill="#55595e" opacity="0.5"/>
+
+    <!-- cable / hose bundles (was mane tufts) -->
+    <rect x="140" y="58" width="8" height="14" rx="4" fill="#2b2f33"/>
+    <rect x="134" y="72" width="8" height="14" rx="4" fill="#2b2f33"/>
+    <rect x="128" y="86" width="8" height="14" rx="4" fill="#2b2f33"/>
+
+    <!-- headlight fairing (was head) -->
+    <polygon points="168,34 163,19 177,32" fill="#2b2f33"/>
+    <rect x="160" y="34" width="38" height="24" rx="10" fill="#3a3e42"/>
+    <rect x="186" y="42" width="14" height="14" rx="6" fill="#2b2f33"/>
+    <circle cx="185" cy="46" r="6" fill="#ffb454"/>
+    <circle cx="185" cy="46" r="2.5" fill="#fff3d6"/>
+    <!-- amber indicator lights on the tank -->
+    <circle cx="100" cy="64" r="2.5" fill="#ffb454"/>
+    <circle cx="130" cy="64" r="2.5" fill="#ffb454"/>
+
+    <!-- fuel-tank decal / power emblem: army-accent glow, same relative spot the saddle-cloth used to occupy -->
+    <path id="army-accent" fill="#4da3ff" opacity="0.35" d="M78,92 L144,92 L142,120 L118,128 L96,128 L78,120 Z"/>
+    <path fill="#4da3ff" opacity="0.7" d="M84,96 L138,96 L136,116 L118,122 L100,122 L84,116 Z"/>
+    <path fill="#eaf6ff" d="M92,100 L130,100 L128,112 L112,116 L100,116 L92,112 Z"/>
+  </g>
+
+  <!-- ===================== RIDER (tactical armor, visor down) ===================== -->
+  <g id="rider">
+    <rect x="96" y="98" width="24" height="20" rx="10" fill="#2b2f33"/>
+    <rect x="114" y="100" width="18" height="26" rx="8" fill="#3a3e42"/>
+    <rect x="116" y="122" width="16" height="16" rx="6" fill="#2b2f33"/>
+
+    <rect x="90" y="54" width="32" height="48" rx="13" fill="#3a3e42"/>
+    <rect x="90" y="54" width="13" height="48" rx="13" fill="#2b2f33" opacity="0.85"/>
+    <ellipse cx="108" cy="66" rx="9" ry="6" fill="#55595e" opacity="0.5"/>
+    <rect x="90" y="94" width="32" height="6" rx="3" fill="#2b2f33"/>
+    <!-- tactical fabric strap -->
+    <rect x="92" y="72" width="28" height="6" rx="3" fill="#6b6558"/>
+    <circle cx="118" cy="60" r="2" fill="#ffb454"/>
+
+    <!-- helmet with tinted visor, skin hidden -->
+    <rect x="101" y="46" width="10" height="10" fill="#3a3e42"/>
+    <circle cx="106" cy="36" r="14" fill="#3a3e42"/>
+    <path d="M94,36 A12,12 0 0,1 118,36 L116,42 L96,42 Z" fill="#55595e" opacity="0.6"/>
+    <ellipse cx="106" cy="38" rx="7" ry="3" fill="#4da3ff" opacity="0.5"/>
+
+    <rect x="92" y="20" width="28" height="18" rx="10" fill="#2b2f33"/>
+    <rect x="92" y="20" width="10" height="18" rx="10" fill="#3a3e42" opacity="0.7"/>
+  </g>
+
+  <!-- ===================== WEAPON ARM + ENERGY LANCE ===================== -->
+  <g id="weapon-arm">
+    <polygon points="114,54 116,68 146,63 150,53" fill="#2b2f33"/>
+    <circle cx="148" cy="58" r="6" fill="#3a3e42"/>
+    <g transform="translate(148,58) rotate(-18)">
+      <rect x="0" y="-3" width="46" height="6" rx="3" fill="#3a3e42"/>
+      <rect x="2" y="-1.5" width="42" height="1.5" fill="#55595e" opacity="0.6"/>
+      <polygon points="40,-10 60,0 40,10" fill="#4da3ff" opacity="0.35"/>
+      <polygon points="40,-6 56,0 40,6" fill="#4da3ff" opacity="0.7"/>
+      <polygon points="40,-3 50,0 40,3" fill="#eaf6ff"/>
+    </g>
+  </g>
+
+  <!-- ===================== RANK BADGE ===================== -->
+  <g id="rank-badge">
+    <circle cx="97" cy="62" r="10" fill="#0b0e12"/>
+    <text x="97" y="62" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="13" font-weight="bold" fill="#e6edf3">4</text>
+  </g>
+</svg>

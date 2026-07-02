@@ -1,0 +1,87 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Archer, Rank 5 / Tier 5 "Sci-Fi" — right-facing sniper, sniper rifle with holographic scope, chrome bodysuit, power-cell module in the old quiver's screen position -->
+
+  <ellipse cx="100" cy="188" rx="40" ry="7" fill="#000000" opacity="0.28"/>
+
+  <g id="body">
+    <g id="legs">
+      <!-- back (trailing) leg -->
+      <path d="M91,112 L87,156 Q86,167 93,169 L103,169 Q105,165 101,159 L100,112 Z" fill="#4d545c"/>
+      <ellipse cx="95" cy="173" rx="10" ry="6" fill="#232733"/>
+
+      <!-- front (leading) leg -->
+      <path d="M113,112 L128,150 Q131,163 122,168 L108,168 Q105,163 110,155 L111,112 Z" fill="#9aa4ad"/>
+      <ellipse cx="119" cy="172" rx="11" ry="7" fill="#232733"/>
+      <ellipse cx="118" cy="138" rx="8" ry="5" fill="#c9d3da" opacity="0.45"/>
+    </g>
+
+    <!-- power-cell / ammo module: same rectangular back silhouette as the old quiver, repurposed -->
+    <g transform="rotate(-13 73 74)">
+      <rect x="64" y="50" width="17" height="47" rx="4" fill="#4d545c"/>
+      <rect x="64" y="50" width="17" height="47" rx="4" fill="none" stroke="#c9d3da" stroke-width="1" opacity="0.5"/>
+      <rect x="67" y="56" width="11" height="8" rx="2" fill="#2f3438"/>
+      <circle cx="72.5" cy="60" r="1.6" fill="#7fd4e0"/>
+      <rect x="67" y="68" width="11" height="8" rx="2" fill="#2f3438"/>
+      <circle cx="72.5" cy="72" r="1.6" fill="#7fd4e0"/>
+      <rect x="67" y="80" width="11" height="8" rx="2" fill="#2f3438"/>
+      <circle cx="72.5" cy="84" r="1.6" fill="#7fd4e0"/>
+    </g>
+
+    <!-- army-accent: the single tagged element (see weapon-arm scope) is placed there; this sash slot is folded into the bodysuit seam below -->
+    <path d="M84,60 Q104,66 122,60 L122,66 Q104,72 84,66 Z" fill="#4d545c"/>
+
+    <!-- torso: sleek chrome bodysuit -->
+    <rect x="82" y="58" width="44" height="52" rx="14" fill="#9aa4ad"/>
+    <rect x="84" y="60" width="40" height="15" rx="10" fill="#c9d3da" opacity="0.4"/>
+    <path d="M86,78 L122,78 L122,82 L86,82 Z" fill="#4d545c"/>
+    <path d="M82,100 Q104,110 126,100 L126,110 Q104,118 82,110 Z" fill="#4d545c"/>
+
+    <!-- belt -->
+    <rect x="80" y="106" width="48" height="8" rx="3" fill="#4d545c"/>
+    <rect x="99" y="105" width="10" height="10" rx="2" fill="#c9d3da"/>
+
+    <!-- suit collar (replaces bare neck) -->
+    <rect x="102" y="48" width="12" height="8" fill="#9aa4ad"/>
+
+    <!-- helmet with tinted visor, replacing the cap/goggles -->
+    <circle cx="108" cy="38" r="14" fill="#9aa4ad"/>
+    <path d="M90,40 Q86,14 108,12 Q130,14 126,40 Q126,30 108,28 Q90,30 90,40 Z" fill="#4d545c"/>
+    <path d="M94,34 Q108,26 122,34 L122,44 Q108,50 94,44 Z" fill="#2f3438"/>
+    <ellipse cx="108" cy="38" rx="14" ry="4" fill="#c9d3da" opacity="0.35"/>
+  </g>
+
+  <g id="weapon-arm">
+    <!-- draw arm / trigger hand -->
+    <path d="M98,66 Q92,74 96,82 Q99,88 106,86 L112,82 Q110,74 104,68 Z" fill="#4d545c"/>
+    <circle cx="114" cy="80" r="6" fill="#e0b088" opacity="0.85"/>
+
+    <!-- sniper rifle chassis -->
+    <path d="M106,72 L122,70 L126,92 L108,94 Z" fill="#4d545c"/>
+    <rect x="108" y="76" width="14" height="3" fill="#9aa4ad" opacity="0.6"/>
+
+    <!-- long barrel: attack range grown further than rank 4's rifle -->
+    <rect x="122" y="78" width="70" height="5" rx="2" fill="#4d545c"/>
+    <rect x="122" y="78" width="70" height="1.5" fill="#c9d3da" opacity="0.7"/>
+    <rect x="182" y="76.5" width="8" height="8" rx="1.5" fill="#4d545c"/>
+
+    <!-- rail + holographic scope housing -->
+    <rect x="132" y="72" width="38" height="3" fill="#9aa4ad"/>
+    <rect x="141" y="59" width="20" height="17" rx="8" fill="#4d545c"/>
+
+    <!-- army-accent energy glow: the scope's reticle, the unit's power signature -->
+    <circle cx="151" cy="67.5" r="9" fill="#4da3ff" opacity="0.18"/>
+    <circle cx="151" cy="67.5" r="6" fill="#4da3ff" opacity="0.35"/>
+    <circle id="army-accent" fill="#4da3ff" cx="151" cy="67.5" r="3.2"/>
+
+    <!-- fore-grip arm -->
+    <path d="M120,64 Q136,64 142,76 Q144,82 138,84 L133,80 Q128,70 116,70 Z" fill="#9aa4ad"/>
+    <circle cx="141" cy="79" r="6" fill="#e0b088" opacity="0.85"/>
+    <rect x="137" y="76" width="8" height="8" rx="2" fill="#4d545c"/>
+  </g>
+
+  <!-- rank badge (bottom-right, clear of the rifle) -->
+  <g id="rank-badge">
+    <circle cx="178" cy="176" r="11" fill="#0b0e12"/>
+    <text x="178" y="181" font-family="system-ui, sans-serif" font-size="15" font-weight="bold" fill="#e6edf3" text-anchor="middle">5</text>
+  </g>
+</svg>

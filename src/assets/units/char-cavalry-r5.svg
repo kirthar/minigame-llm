@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <title>Cavalry - Rank 5 (Sci-fi)</title>
+
+  <!-- ground contact shadow -->
+  <ellipse cx="104" cy="193" rx="78" ry="6" fill="#0b0e12" opacity="0.3"/>
+
+  <!-- ===================== HOVER-BIKE THRUSTER PODS (was motorcycle wheels / horse legs) ===================== -->
+  <g id="legs">
+    <ellipse cx="64" cy="176" rx="26" ry="14" fill="#4d545c"/>
+    <ellipse cx="64" cy="176" rx="26" ry="14" fill="none" stroke="#c9d3da" stroke-width="3"/>
+    <ellipse cx="64" cy="187" rx="20" ry="6" fill="#4da3ff" opacity="0.4"/>
+
+    <ellipse cx="140" cy="176" rx="24" ry="13" fill="#4d545c"/>
+    <ellipse cx="140" cy="176" rx="24" ry="13" fill="none" stroke="#c9d3da" stroke-width="3"/>
+    <ellipse cx="140" cy="186" rx="18" ry="5" fill="#4da3ff" opacity="0.4"/>
+
+    <rect x="86" y="152" width="36" height="10" rx="4" fill="#4d545c"/>
+  </g>
+
+  <!-- ===================== HOVER-BIKE BODY (chrome chassis, fork mast, headlight, energy vent) ===================== -->
+  <g id="body">
+    <!-- energy exhaust vent (was tail / exhaust pipe) -->
+    <path d="M52,100 C36,96 26,110 30,130 C32,144 42,150 52,146 C46,130 46,114 52,100 Z" fill="#4d545c"/>
+    <circle cx="34" cy="128" r="5" fill="#c9d3da"/>
+    <ellipse cx="29" cy="128" rx="6" ry="3" fill="#4da3ff" opacity="0.5"/>
+
+    <!-- main chrome chassis (was torso / fuel tank) -->
+    <rect x="48" y="96" width="100" height="58" rx="20" fill="#9aa4ad"/>
+    <rect x="48" y="134" width="100" height="22" rx="16" fill="#4d545c" opacity="0.9"/>
+    <ellipse cx="88" cy="106" rx="32" ry="10" fill="#c9d3da" opacity="0.5"/>
+    <rect x="52" y="136" width="88" height="14" rx="7" fill="#6b6558"/>
+
+    <!-- front fork / steering mast (was neck) -->
+    <polygon points="146,58 128,102 152,110 172,55" fill="#9aa4ad"/>
+    <polygon points="146,58 172,55 166,66 150,70" fill="#c9d3da" opacity="0.5"/>
+
+    <!-- cable / conduit bundles (was mane tufts) -->
+    <rect x="140" y="58" width="8" height="14" rx="4" fill="#4d545c"/>
+    <rect x="134" y="72" width="8" height="14" rx="4" fill="#4d545c"/>
+    <rect x="128" y="86" width="8" height="14" rx="4" fill="#4d545c"/>
+
+    <!-- headlight fairing (was head) -->
+    <polygon points="168,34 163,19 177,32" fill="#4d545c"/>
+    <rect x="160" y="34" width="38" height="24" rx="10" fill="#9aa4ad"/>
+    <rect x="186" y="42" width="14" height="14" rx="6" fill="#4d545c"/>
+    <circle cx="185" cy="46" r="6" fill="#4da3ff" opacity="0.5"/>
+    <circle cx="185" cy="46" r="2.5" fill="#eaf6ff"/>
+
+    <!-- power-cell glow: army-accent, same relative spot the saddle-cloth / tank decal used to occupy -->
+    <path id="army-accent" fill="#4da3ff" opacity="0.3" d="M78,90 L144,90 L142,120 L118,130 L96,130 L78,120 Z"/>
+    <path fill="#4da3ff" opacity="0.65" d="M84,95 L138,95 L136,116 L118,124 L100,124 L84,116 Z"/>
+    <path fill="#eaf6ff" d="M94,99 L128,99 L126,111 L112,115 L100,115 L94,111 Z"/>
+  </g>
+
+  <!-- ===================== RIDER (full sci-fi chrome armor) ===================== -->
+  <g id="rider">
+    <rect x="96" y="98" width="24" height="20" rx="10" fill="#4d545c"/>
+    <rect x="114" y="100" width="18" height="26" rx="8" fill="#9aa4ad"/>
+    <rect x="116" y="122" width="16" height="16" rx="6" fill="#4d545c"/>
+
+    <rect x="90" y="54" width="32" height="48" rx="13" fill="#9aa4ad"/>
+    <rect x="90" y="54" width="13" height="48" rx="13" fill="#4d545c" opacity="0.85"/>
+    <ellipse cx="108" cy="66" rx="9" ry="6" fill="#c9d3da" opacity="0.6"/>
+    <rect x="90" y="94" width="32" height="6" rx="3" fill="#4d545c"/>
+    <circle cx="118" cy="60" r="2" fill="#4da3ff" opacity="0.8"/>
+
+    <!-- helmet, glowing visor, skin fully hidden -->
+    <rect x="101" y="46" width="10" height="10" fill="#9aa4ad"/>
+    <circle cx="106" cy="36" r="14" fill="#9aa4ad"/>
+    <path d="M94,36 A12,12 0 0,1 118,36 L116,44 L96,44 Z" fill="#4da3ff" opacity="0.6"/>
+    <ellipse cx="106" cy="38" rx="7" ry="3" fill="#eaf6ff" opacity="0.8"/>
+
+    <rect x="92" y="20" width="28" height="18" rx="10" fill="#4d545c"/>
+    <rect x="92" y="20" width="10" height="18" rx="10" fill="#9aa4ad" opacity="0.7"/>
+  </g>
+
+  <!-- ===================== WEAPON ARM + FULL ENERGY LANCE ===================== -->
+  <g id="weapon-arm">
+    <polygon points="114,54 116,68 146,63 150,53" fill="#4d545c"/>
+    <circle cx="148" cy="58" r="6" fill="#9aa4ad"/>
+    <g transform="translate(148,58) rotate(-18)">
+      <rect x="0" y="-2.5" width="48" height="5" rx="2.5" fill="#9aa4ad"/>
+      <rect x="2" y="-1" width="44" height="1" fill="#c9d3da" opacity="0.7"/>
+      <polygon points="42,-11 64,0 42,11" fill="#4da3ff" opacity="0.3"/>
+      <polygon points="42,-7 58,0 42,7" fill="#4da3ff" opacity="0.7"/>
+      <polygon points="42,-3 50,0 42,3" fill="#eaf6ff"/>
+    </g>
+  </g>
+
+  <!-- ===================== RANK BADGE ===================== -->
+  <g id="rank-badge">
+    <circle cx="97" cy="62" r="10" fill="#0b0e12"/>
+    <text x="97" y="62" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="13" font-weight="bold" fill="#e6edf3">5</text>
+  </g>
+</svg>

@@ -1,0 +1,63 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Light Infantry, Rank 4 / Tier 4 "Transición Moderna" — tactical operator, combat knife -->
+
+  <ellipse cx="100" cy="188" rx="40" ry="7" fill="#000000" opacity="0.25"/>
+
+  <g id="body">
+    <g id="legs">
+      <path d="M90,110 L87,155 Q86,166 93,168 L103,168 Q105,164 101,158 L99,110 Z" fill="#2b2f33"/>
+      <ellipse cx="95" cy="172" rx="10" ry="6" fill="#1c1f22"/>
+
+      <path d="M114,110 L126,152 Q129,164 121,168 L109,168 Q106,164 110,156 L112,110 Z" fill="#3a3e42"/>
+      <ellipse cx="118" cy="172" rx="11" ry="7" fill="#1c1f22"/>
+      <rect x="110" y="132" width="12" height="9" rx="2" fill="#55595e"/>
+      <rect x="90" y="150" width="10" height="7" rx="2" fill="#6b6558"/>
+    </g>
+
+    <path id="army-accent" fill="#4da3ff"
+      d="M92,56 L60,64 Q55,110 62,150 L86,158 L92,140 Q74,118 78,86 Q80,66 100,58 Z"/>
+    <path d="M62,70 Q58,110 66,144" stroke="#1c1f22" stroke-width="2" fill="none" opacity="0.25"/>
+    <path d="M90,52 Q80,56 76,64 L86,64 Q90,58 96,54 Z" fill="#2b2f33"/>
+
+    <rect x="82" y="56" width="46" height="54" rx="14" fill="#3a3e42"/>
+    <rect x="84" y="58" width="42" height="16" rx="10" fill="#55595e" opacity="0.35"/>
+    <path d="M82,98 Q105,108 128,98 L128,110 Q105,118 82,110 Z" fill="#2b2f33"/>
+
+    <rect x="88" y="64" width="6" height="18" rx="2" fill="#6b6558"/>
+    <rect x="98" y="64" width="6" height="18" rx="2" fill="#6b6558"/>
+    <rect x="88" y="86" width="16" height="10" rx="2" fill="#6b6558"/>
+    <circle cx="118" cy="70" r="4" fill="#ffb454" opacity="0.3"/>
+    <circle cx="118" cy="70" r="2" fill="#ffb454"/>
+
+    <rect x="80" y="106" width="50" height="8" rx="3" fill="#2b2f33"/>
+    <rect x="99" y="105" width="10" height="10" rx="2" fill="#55595e"/>
+    <rect x="82" y="105" width="8" height="9" rx="1.5" fill="#6b6558"/>
+
+    <path d="M88,62 Q70,78 68,104 Q67,111 74,113 L82,108 Q80,88 94,68 Z" fill="#3a3e42"/>
+    <rect x="70" y="98" width="9" height="14" rx="2" fill="#2b2f33"/>
+    <rect x="72" y="97" width="5" height="4" fill="#55595e"/>
+
+    <rect x="102" y="48" width="12" height="8" fill="#e0b088"/>
+
+    <circle cx="108" cy="38" r="14" fill="#e0b088"/>
+    <path d="M92,42 Q88,18 108,17 Q128,18 124,42 Q126,28 108,24 Q90,28 92,42 Z" fill="#2b2f33"/>
+    <path d="M94,42 Q108,54 122,42 L122,50 Q108,60 94,50 Z" fill="#1c1f22"/>
+    <rect x="96" y="27" width="24" height="10" rx="5" fill="#55595e"/>
+    <ellipse cx="103" cy="31" rx="3" ry="2" fill="#ffb454" opacity="0.85"/>
+    <ellipse cx="114" cy="31" rx="3" ry="2" fill="#ffb454" opacity="0.5"/>
+  </g>
+
+  <g id="weapon-arm">
+    <path d="M120,64 Q144,66 154,84 Q157,91 149,94 L142,89 Q136,76 116,72 Z" fill="#3a3e42"/>
+    <circle cx="150" cy="90" r="6" fill="#2b2f33"/>
+    <rect x="145" y="87" width="8" height="5" rx="2" fill="#1c1f22"/>
+    <circle cx="146" cy="89" r="1.4" fill="#ffb454"/>
+    <path d="M151,87 L166,80 L168,84 L153,91 Z" fill="#55595e"/>
+    <path d="M152,87 L165,81" stroke="#2b2f33" stroke-width="1" opacity="0.6"/>
+  </g>
+
+  <g id="rank-badge">
+    <circle cx="176" cy="32" r="11" fill="#0b0e12"/>
+    <text x="176" y="37" font-family="system-ui, sans-serif" font-size="15" font-weight="bold" fill="#e6edf3" text-anchor="middle">4</text>
+  </g>
+</svg>

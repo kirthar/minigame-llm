@@ -52,11 +52,18 @@ motor ni el render.
   la derecha por defecto y **volteado horizontalmente** cuando se mueve hacia
   la izquierda. Tienen una animación simple por estado (reposo, movimiento,
   ataque) calculada en el render a partir de la orden ejecutada ese turno.
+- Cada tipo tiene arte propia para sus **5 rangos**, con una progresión visual
+  de época compartida entre los 4 tipos: rango 1 medieval temprano → rango 2
+  medieval clásico → rango 3 tardomedieval/renacentista → rango 4 transición
+  moderna → rango 5 sci-fi (caballo → moto → moto futurista en el caso de
+  caballería; cota → placa → exo-armadura → mech en infantería pesada, etc.).
 - **Color de ejército** = un único elemento de acento recoloreado en tiempo de
-  carga (`src/render/spriteLoader.ts`). **Insignia de rango** = círculo con el
-  número, dibujado aparte para que sea correcto en cualquier rango aunque hoy
-  sólo exista arte de rango 1 (rangos 2–5 reutilizan ese mismo dibujo hasta
-  que se ilustren variantes propias). Barra de HP sobre cada unidad.
+  carga (`src/render/spriteLoader.ts`). En rangos 1–3 es una prenda de tela
+  (capa, fajín, manto de silla); en rangos 4–5 se convierte en un brillo de
+  energía (arma, visor, panel de vehículo) — mismo mecanismo de recoloreo,
+  lectura visual de "firma energética" en la era sci-fi. **Insignia de rango**
+  = círculo con el número, dibujado aparte del sprite para que sea siempre
+  correcto. Barra de HP sobre cada unidad.
 - Si el sprite de una unidad aún no ha terminado de decodificar ese frame, se
   usa como respaldo la figura geométrica original (forma = tipo, color =
   ejército).

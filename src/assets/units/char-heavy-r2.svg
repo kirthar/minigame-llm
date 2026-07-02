@@ -1,0 +1,91 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Heavy Infantry, Rank 2 / Tier 2 "Medieval clasico" — REFERENCE CELL: full plate armor, iron shield -->
+  <ellipse cx="102" cy="188" rx="50" ry="8" fill="#000000" opacity="0.25"/>
+
+  <g id="body">
+    <g id="legs">
+      <!-- back (trailing) leg — plate greave -->
+      <path d="M74,112 L98,112 L94,172 Q93,180 85,180 L77,180 Q70,180 72,172 Z" fill="#5c5866"/>
+      <ellipse cx="83" cy="182" rx="13" ry="7" fill="#232733"/>
+
+      <!-- front (leading) leg -->
+      <path d="M104,108 L132,108 L138,176 Q139,184 130,184 L114,184 Q107,184 108,176 Z" fill="#706c78"/>
+      <ellipse cx="122" cy="186" rx="15" ry="7" fill="#232733"/>
+
+      <ellipse cx="118" cy="138" rx="10" ry="6" fill="#dcd8e2" opacity="0.4"/>
+      <circle cx="83" cy="140" r="2.5" fill="#b8925a"/>
+      <circle cx="122" cy="136" r="2.5" fill="#b8925a"/>
+    </g>
+
+    <!-- full plate breastplate (replaces chainmail torso) -->
+    <rect x="58" y="62" width="80" height="30" rx="14" fill="#706c78"/>
+    <path d="M98,62 L98,92 M78,64 Q78,78 82,90 M138,64 Q138,78 134,90" stroke="#413d48" stroke-width="2" fill="none" opacity="0.5"/>
+    <ellipse cx="78" cy="72" rx="18" ry="8" fill="#dcd8e2" opacity="0.45"/>
+    <rect x="58" y="90" width="80" height="20" rx="10" fill="#5c5866"/>
+    <path d="M54,104 Q98,116 142,104 L142,128 Q98,140 54,128 Z" fill="#413d48"/>
+    <path d="M60,64 Q98,72 136,64" stroke="#b8925a" stroke-width="2.5" fill="none" opacity="0.9"/>
+
+    <!-- pauldron shoulders (plate, layered) -->
+    <ellipse cx="62" cy="72" rx="14" ry="12" fill="#706c78"/>
+    <ellipse cx="62" cy="70" rx="10" ry="7" fill="#dcd8e2" opacity="0.3"/>
+    <ellipse cx="134" cy="72" rx="14" ry="12" fill="#706c78"/>
+    <ellipse cx="134" cy="70" rx="10" ry="7" fill="#dcd8e2" opacity="0.3"/>
+    <circle cx="62" cy="78" r="2" fill="#b8925a"/>
+    <circle cx="134" cy="78" r="2" fill="#b8925a"/>
+
+    <!-- army accent: shoulder wrap / sash over the plate -->
+    <path id="army-accent" fill="#4da3ff" d="M62,64 Q54,90 70,116 L86,110 Q72,88 80,66 Z"/>
+    <ellipse cx="70" cy="86" rx="7" ry="16" fill="#ffffff" opacity="0.18"/>
+
+    <!-- belt -->
+    <rect x="56" y="100" width="84" height="9" rx="3" fill="#232733"/>
+    <rect x="93" y="101" width="14" height="8" rx="2" fill="#b8925a"/>
+
+    <!-- neck -->
+    <rect x="100" y="50" width="16" height="12" fill="#e0b088"/>
+
+    <!-- head -->
+    <circle cx="108" cy="40" r="16" fill="#e0b088"/>
+    <path d="M94,44 Q92,26 108,24 Q124,26 122,44 Q108,36 94,44 Z" fill="#c8935f"/>
+
+    <!-- open-face visored helmet with small plume -->
+    <path d="M90,42 Q88,18 108,16 Q128,18 126,42 Q126,30 108,28 Q90,30 90,42 Z" fill="#706c78"/>
+    <path d="M88,40 Q108,50 128,40 L128,47 Q108,56 88,47 Z" fill="#5c5866"/>
+    <rect x="105" y="38" width="6" height="18" fill="#5c5866"/>
+    <ellipse cx="108" cy="44" rx="14" ry="3" fill="#16213a" opacity="0.65"/>
+    <ellipse cx="99" cy="24" rx="6" ry="4" fill="#dcd8e2" opacity="0.5"/>
+    <path d="M90,34 Q108,40 126,34" stroke="#b8925a" stroke-width="2" fill="none"/>
+    <path d="M108,16 Q101,10 103,6 Q108,10 108,13 Q108,10 113,6 Q115,10 108,16 Z" fill="#8a2f2f" opacity="0.85"/>
+  </g>
+
+  <g id="shield">
+    <!-- iron round/kite shield (replaces rank1's wooden shield, same slot) -->
+    <path d="M84,86 Q142,78 144,110 Q146,148 114,164 Q88,150 82,112 Z" fill="#413d48"/>
+    <path d="M88,90 Q138,83 140,110 Q142,144 113,158 Q90,146 86,112 Z" fill="#706c78"/>
+    <path d="M88,90 Q138,83 140,110 L86,112 Z" fill="#dcd8e2" opacity="0.35"/>
+    <path d="M88,90 Q138,83 140,110 Q142,144 113,158 Q90,146 86,112 Z" fill="none" stroke="#b8925a" stroke-width="2" opacity="0.8"/>
+    <circle cx="113" cy="118" r="13" fill="#5a5f66"/>
+    <circle cx="113" cy="118" r="7" fill="#b8925a"/>
+    <ellipse cx="100" cy="100" rx="8" ry="5" fill="#ffffff" opacity="0.15"/>
+  </g>
+
+  <g id="weapon-arm">
+    <path d="M126,68 Q146,66 156,50 Q160,42 168,32" stroke="#5c5866" stroke-width="16" stroke-linecap="round" fill="none"/>
+    <path d="M126,68 Q146,66 154,54" stroke="#413d48" stroke-width="16" stroke-linecap="round" fill="none" opacity="0.5"/>
+    <circle cx="168" cy="32" r="8" fill="#e0b088"/>
+    <rect x="164" y="10" width="7" height="26" rx="3" fill="#5c5866" transform="rotate(20 168 32)"/>
+    <g transform="translate(179,13) rotate(20)">
+      <circle r="11" fill="#706c78"/>
+      <circle r="5" fill="#dcd8e2"/>
+      <rect x="-3" y="-14" width="6" height="7" fill="#b8925a"/>
+      <rect x="-14" y="-3" width="7" height="6" fill="#b8925a"/>
+      <rect x="8" y="-3" width="7" height="6" fill="#b8925a"/>
+      <rect x="-3" y="7" width="6" height="7" fill="#b8925a"/>
+    </g>
+  </g>
+
+  <g id="rank-badge">
+    <circle cx="24" cy="26" r="11" fill="#0b0e12"/>
+    <text x="24" y="31" font-family="system-ui, sans-serif" font-size="15" font-weight="bold" fill="#e6edf3" text-anchor="middle">2</text>
+  </g>
+</svg>

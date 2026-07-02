@@ -1,0 +1,86 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Heavy Infantry, Rank 4 / Tier 4 "Transicion moderna" — early exo-suit over tactical bodysuit, riot shield -->
+  <ellipse cx="102" cy="188" rx="50" ry="8" fill="#000000" opacity="0.28"/>
+
+  <g id="body">
+    <g id="legs">
+      <!-- back (trailing) leg — khaki tactical pant + matte knee pad -->
+      <path d="M74,112 L98,112 L94,172 Q93,180 85,180 L77,180 Q70,180 72,172 Z" fill="#6b6558"/>
+      <ellipse cx="83" cy="182" rx="13" ry="7" fill="#232733"/>
+      <path d="M75,132 L97,132 L95,146 L77,146 Z" fill="#3a3e42"/>
+      <rect x="80" y="136" width="6" height="4" fill="#ffb454"/>
+
+      <!-- front (leading) leg -->
+      <path d="M104,108 L132,108 L138,176 Q139,184 130,184 L114,184 Q107,184 108,176 Z" fill="#6b6558"/>
+      <ellipse cx="122" cy="186" rx="15" ry="7" fill="#232733"/>
+      <path d="M107,130 L133,130 L131,146 L109,146 Z" fill="#3a3e42"/>
+      <rect x="116" y="134" width="6" height="4" fill="#ffb454"/>
+
+      <ellipse cx="118" cy="138" rx="10" ry="6" fill="#55595e" opacity="0.3"/>
+    </g>
+
+    <!-- exo-frame plates over tactical vest (material shift away from plate) -->
+    <rect x="58" y="62" width="80" height="30" rx="10" fill="#6b6558"/>
+    <path d="M62,64 L134,64 L130,88 L66,88 Z" fill="#3a3e42"/>
+    <path d="M64,68 L132,68 L129,84 L67,84 Z" fill="#2b2f33" opacity="0.6"/>
+    <rect x="94" y="70" width="12" height="6" rx="2" fill="#ffb454"/>
+    <rect x="58" y="90" width="80" height="20" rx="8" fill="#3a3e42"/>
+    <path d="M54,104 Q98,114 142,104 L142,126 Q98,136 54,126 Z" fill="#2b2f33"/>
+
+    <!-- exo-frame shoulder plates -->
+    <path d="M48,64 L76,60 L78,82 L50,86 Z" fill="#3a3e42"/>
+    <path d="M50,68 L74,64 L75,76 L52,80 Z" fill="#55595e" opacity="0.5"/>
+    <path d="M120,60 L148,64 L150,86 L122,82 Z" fill="#3a3e42"/>
+    <path d="M124,64 L146,68 L145,80 L123,76 Z" fill="#55595e" opacity="0.5"/>
+
+    <!-- army accent: tactical strap/sash over the rig -->
+    <path id="army-accent" fill="#4da3ff" d="M62,64 Q54,90 70,116 L86,110 Q72,88 80,66 Z"/>
+    <ellipse cx="70" cy="86" rx="7" ry="16" fill="#ffffff" opacity="0.15"/>
+
+    <!-- belt -->
+    <rect x="56" y="100" width="84" height="9" rx="3" fill="#232733"/>
+    <rect x="93" y="101" width="14" height="8" rx="2" fill="#55595e"/>
+
+    <!-- neck -->
+    <rect x="100" y="50" width="16" height="12" fill="#e0b088"/>
+
+    <!-- head: mostly hidden behind closed visor, tiny jaw sliver visible -->
+    <circle cx="108" cy="40" r="16" fill="#e0b088"/>
+    <path d="M96,48 Q108,52 120,48 L120,44 Q108,48 96,44 Z" fill="#c8935f"/>
+
+    <!-- tactical combat helmet, closed, small dark visor slit -->
+    <path d="M88,40 Q86,16 108,14 Q130,16 128,40 Q128,26 108,24 Q88,26 88,40 Z" fill="#3a3e42"/>
+    <path d="M86,36 Q108,46 130,36 L130,48 Q108,58 86,48 Z" fill="#2b2f33"/>
+    <rect x="90" y="38" width="36" height="6" rx="2" fill="#16213a"/>
+    <rect x="90" y="38" width="36" height="6" rx="2" fill="none" stroke="#55595e" stroke-width="1"/>
+    <circle cx="122" cy="41" r="1.6" fill="#ffb454"/>
+    <path d="M96,22 Q108,18 120,22" stroke="#55595e" stroke-width="2" fill="none"/>
+  </g>
+
+  <g id="shield">
+    <!-- ballistic riot shield (rectangular, same slot as prior round/tower shields) -->
+    <rect x="84" y="82" width="56" height="80" rx="6" fill="#2b2f33"/>
+    <rect x="89" y="87" width="46" height="70" rx="4" fill="#3a3e42"/>
+    <rect x="93" y="91" width="38" height="46" rx="2" fill="#55595e" opacity="0.35"/>
+    <rect x="89" y="87" width="46" height="70" rx="4" fill="none" stroke="#6b6558" stroke-width="2"/>
+    <circle cx="112" cy="146" r="3" fill="#ffb454"/>
+    <rect x="93" y="150" width="38" height="4" fill="#6b6558"/>
+  </g>
+
+  <g id="weapon-arm">
+    <!-- heavy sidearm -->
+    <path d="M126,68 Q146,66 156,50 Q160,42 168,32" stroke="#3a3e42" stroke-width="16" stroke-linecap="round" fill="none"/>
+    <path d="M126,68 Q146,66 154,54" stroke="#2b2f33" stroke-width="16" stroke-linecap="round" fill="none" opacity="0.5"/>
+    <circle cx="168" cy="32" r="8" fill="#e0b088"/>
+    <g transform="translate(180,24) rotate(20)">
+      <rect x="-6" y="-8" width="26" height="12" rx="2" fill="#2b2f33"/>
+      <rect x="-10" y="-2" width="8" height="14" rx="2" fill="#3a3e42"/>
+      <circle cx="17" cy="-2" r="2" fill="#ffb454"/>
+    </g>
+  </g>
+
+  <g id="rank-badge">
+    <circle cx="24" cy="26" r="11" fill="#0b0e12"/>
+    <text x="24" y="31" font-family="system-ui, sans-serif" font-size="15" font-weight="bold" fill="#e6edf3" text-anchor="middle">4</text>
+  </g>
+</svg>
