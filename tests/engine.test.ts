@@ -94,6 +94,15 @@ describe("GameEngine · captura", () => {
     engine.tick();
     expect(weak.alive).toBe(true);
     expect(weak.armyId).toBe(0); // capturada por el ejército 0
+
+    // Regresión: la unidad capturada debe "pintarse" con el color de su nuevo
+    // ejército (el render lee armyId en vivo desde una caché por ejército, no
+    // por unidad, así que esto ya funciona; se deja garantizado con un test).
+    const captorArmy = engine.state.armyById(0);
+    const originalArmy = engine.state.armyById(1);
+    expect(captorArmy).toBeDefined();
+    expect(engine.state.armyById(weak.armyId)?.color).toBe(captorArmy?.color);
+    expect(engine.state.armyById(weak.armyId)?.color).not.toBe(originalArmy?.color);
   });
 });
 

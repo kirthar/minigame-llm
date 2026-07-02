@@ -11,6 +11,7 @@ import type {
 } from "../src/agents/Agent.ts";
 import { OrderType, resolveOrder, type OrderSet } from "../src/orders/orders.ts";
 import type { Rank, Stats, UnitType } from "../src/domain/types.ts";
+import { createRng } from "../src/engine/rng.ts";
 
 const BUDGET = 100;
 
@@ -20,6 +21,7 @@ function ctx(): ArmyBuildContext {
     selfArmyId: 0,
     armyCount: 2,
     fieldSize: 720,
+    rng: createRng(1),
     costOf: (t: UnitType, r: Rank) => Math.ceil(UNIT_DEFS[t].baseCost * costMultiplier(r)),
     statsOf: (t: UnitType, r: Rank): Stats => {
       const b = UNIT_DEFS[t].baseStats;
@@ -95,6 +97,7 @@ function makeView(engine: GameEngine, selfArmyId: number): BattlefieldView {
       maxHp: u.stats().maxHp,
       stats: u.stats(),
       cost: u.cost(),
+      hpFrac: u.hp / u.stats().maxHp,
     }));
   return {
     turn: engine.state.turn,
@@ -102,11 +105,28 @@ function makeView(engine: GameEngine, selfArmyId: number): BattlefieldView {
     fieldSize: 720,
     selfArmyId,
     units,
+    rng: createRng(2),
+    alliances: [],
+    reputations: {},
     own() {
       return this.units.filter((u) => u.armyId === selfArmyId);
     },
     enemies() {
       return this.units.filter((u) => u.armyId !== selfArmyId);
+    },
+    armyStrength(armyId: number) {
+      return this.units
+        .filter((u) => u.armyId === armyId)
+        .reduce((s, u) => s + u.cost * (u.hp / u.maxHp), 0);
+    },
+    unitCount(armyId: number) {
+      return this.units.filter((u) => u.armyId === armyId).length;
+    },
+    nearestEnemyTo() {
+      return this.enemies()[0] ?? null;
+    },
+    nearestAllyTo() {
+      return this.own()[0] ?? null;
     },
   };
 }

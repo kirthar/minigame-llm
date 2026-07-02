@@ -156,3 +156,12 @@ canvas#battlefield {
 .event-log .evt-rank {
   color: #7ee787;
 }
+
+.event-log .evt-alliance {
+  color: #4da3ff;
+}
+
+.event-log .evt-betrayal {
+  color: #ff9f6b;
+  font-weight: 600;
+}

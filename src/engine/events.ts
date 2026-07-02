@@ -13,4 +13,13 @@ export type GameEvent =
       probability: number;
     }
   | { kind: "rankup"; unitId: UnitId; newRank: Rank }
+  | { kind: "alliance-formed"; a: ArmyId; b: ArmyId; turn: number }
+  | { kind: "alliance-broken"; a: ArmyId; b: ArmyId }
+  | {
+      kind: "betrayal";
+      betrayerArmyId: ArmyId;
+      victimArmyId: ArmyId;
+      unitId: UnitId;
+      targetId: UnitId;
+    }
   | { kind: "finished"; winner: ArmyId | null; turn: number };

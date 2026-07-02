@@ -10,7 +10,7 @@ export const UNIT_DEFS: Record<UnitType, UnitTypeDef> = {
     type: UnitType.Archer,
     label: "Arquero",
     shape: Shape.Triangle,
-    baseStats: { maxHp: 17, attack: 4, range: 20, move: 117, armor: 0 },
+    baseStats: { maxHp: 17, attack: 4, range: 20, move: 197, armor: 0 },
     baseCost: 12,
     // Kitea y castiga a la infantería pesada.
     damageBonusVs: { [UnitType.Heavy]: 1.5 },
@@ -20,7 +20,7 @@ export const UNIT_DEFS: Record<UnitType, UnitTypeDef> = {
     type: UnitType.Light,
     label: "Inf. ligera",
     shape: Shape.Circle,
-    baseStats: { maxHp: 21, attack: 3, range: 3, move: 180, armor: 0 },
+    baseStats: { maxHp: 21, attack: 3, range: 3, move: 300, armor: 0 },
     baseCost: 6,
     // Barata y numerosa; cierra distancias con los arqueros.
     damageBonusVs: { [UnitType.Archer]: 1.25 },
@@ -30,7 +30,7 @@ export const UNIT_DEFS: Record<UnitType, UnitTypeDef> = {
     type: UnitType.Heavy,
     label: "Inf. pesada",
     shape: Shape.Square,
-    baseStats: { maxHp: 43, attack: 5, range: 3, move: 72, armor: 2 },
+    baseStats: { maxHp: 43, attack: 5, range: 3, move: 120, armor: 2 },
     baseCost: 15,
     // Muro anti-carga contra caballería.
     damageBonusVs: { [UnitType.Cavalry]: 1.5 },
@@ -40,10 +40,10 @@ export const UNIT_DEFS: Record<UnitType, UnitTypeDef> = {
     type: UnitType.Cavalry,
     label: "Caballería",
     shape: Shape.Diamond,
-    baseStats: { maxHp: 30, attack: 7, range: 3, move: 360, armor: 1 },
+    baseStats: { maxHp: 30, attack: 7, range: 3, move: 600, armor: 1 },
     baseCost: 20,
     // Arrolla a tropas ligeras y a arqueros.
     damageBonusVs: { [UnitType.Archer]: 1.5, [UnitType.Light]: 1.5 },
-    chargeBonusPerDistance: 0.005,
+    chargeBonusPerDistance: 0.003,
   },
 };

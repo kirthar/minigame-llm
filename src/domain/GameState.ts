@@ -12,6 +12,11 @@ export class GameState {
   winner: ArmyId | null = null;
   finished = false;
 
+  /** Pares de ejércitos actualmente aliados (clave: `pairKey(a,b)`). */
+  readonly alliances = new Set<string>();
+  /** Nº de traiciones cometidas por cada ejército (atacar a un aliado). */
+  readonly betrayalCounts: Record<ArmyId, number> = {};
+
   /** Ejércitos que todavía tienen al menos una unidad viva. */
   livingArmyIds(): ArmyId[] {
     return this.armies

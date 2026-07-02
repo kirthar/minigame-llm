@@ -8,7 +8,11 @@ export const ARMY_COLORS: readonly string[] = [
   "#ff9f6b", // naranja
 ];
 
-/** Grosor de borde según el rango (1..5). */
+/**
+ * Grosor de borde según el rango (1..5). Acotado para no devorar el relleno
+ * de color en unidades pequeñas (UNIT_RADIUS=7): el número de rango dentro
+ * de la figura es ya el indicador principal; el borde es solo un refuerzo.
+ */
 export function borderWidthForRank(rank: number): number {
-  return rank * 2; // 2, 4, 6, 8, 10 px
+  return rank; // 1, 2, 3, 4, 5 px
 }

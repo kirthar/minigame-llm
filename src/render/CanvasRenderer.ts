@@ -12,7 +12,7 @@ export interface DrawOptions {
   t?: number;
 }
 
-const UNIT_RADIUS = 9;
+const UNIT_RADIUS = 7;
 
 /** Dibuja el campo de batalla y las unidades en un canvas 2D. */
 export class CanvasRenderer {
@@ -59,6 +59,12 @@ export class CanvasRenderer {
     ctx.lineWidth = borderWidthForRank(unit.rank);
     ctx.strokeStyle = "#0b0e12";
     ctx.stroke();
+
+    ctx.fillStyle = "#0b0e12";
+    ctx.font = "bold 8px system-ui, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(String(unit.rank), x, y + 0.5);
 
     this.drawHpBar(unit, x, y);
   }

@@ -1,4 +1,5 @@
 import { HeuristicAgent, type Doctrine } from "./HeuristicAgent.ts";
+import { UtilityAgent } from "./UtilityAgent.ts";
 import type { Agent, AgentFactory } from "./Agent.ts";
 
 /**
@@ -7,17 +8,21 @@ import type { Agent, AgentFactory } from "./Agent.ts";
  * resto del código.
  */
 export const AGENT_REGISTRY: Record<string, AgentFactory> = {
+  utility: () => new UtilityAgent(),
   balanced: () => new HeuristicAgent("balanced"),
   cavalry: () => new HeuristicAgent("cavalry"),
   ranged: () => new HeuristicAgent("ranged"),
 };
 
-const ROTATION: Doctrine[] = ["balanced", "cavalry", "ranged"];
-
-/** Crea un agente para el i-ésimo ejército, rotando entre las doctrinas. */
+/**
+ * Crea el agente por defecto para el i-ésimo ejército. Todos son `UtilityAgent`:
+ * su perfil de estrategia se deriva de su propia composición y de un RNG
+ * semillado por ejército, así que dos instancias ya se comportan de forma
+ * distinta sin necesitar una doctrina con nombre.
+ */
 export function defaultAgentFor(index: number): Agent {
-  return new HeuristicAgent(ROTATION[index % ROTATION.length]);
+  return new UtilityAgent(`Utilidad ${index}`);
 }
 
-export { HeuristicAgent };
+export { HeuristicAgent, UtilityAgent };
 export type { Doctrine };

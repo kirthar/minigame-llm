@@ -5,6 +5,7 @@ import { GAME_CONFIG, XP_PER_KILL_COST_FACTOR } from "../config/game.ts";
 import { costMultiplier, statMultiplier } from "../config/ranks.ts";
 import { armyValue } from "../domain/Army.ts";
 import { Army } from "../domain/Army.ts";
+import { areAllied, pairKey, resolveDiplomacy, type DiplomacyIntent } from "../domain/diplomacy.ts";
 import { GameState } from "../domain/GameState.ts";
 import { Unit } from "../domain/Unit.ts";
 import {
@@ -23,6 +24,12 @@ import { formationPositions, spawnCenters } from "./geometry.ts";
 import type { GameEvent } from "./events.ts";
 import { desiredDestination, moveToward, nearestEnemy } from "./movement.ts";
 import { createRng, type Rng } from "./rng.ts";
+
+/** Agregados por ejército calculados una vez por turno (evita recomputarlos por agente). */
+interface ArmyAggregates {
+  strength: Map<ArmyId, number>;
+  count: Map<ArmyId, number>;
+}
 
 export interface EngineConfig {
   armyCount: number;
@@ -49,6 +56,10 @@ export class GameEngine {
   private readonly agents: Agent[];
   private readonly cfg: EngineConfig;
   private readonly rng: Rng;
+  /** RNG semillado propio de cada ejército, derivado del RNG del motor. */
+  private readonly armyRng: Rng[];
+  /** Índice unidad→objeto, reconstruido al inicio de cada tick (evita O(n) por búsqueda a gran escala). */
+  private unitIndex = new Map<UnitId, Unit>();
   private nextUnitSeq = 0;
 
   constructor(agents: Agent[], config?: Partial<EngineConfig>) {
@@ -61,6 +72,7 @@ export class GameEngine {
     };
     this.agents = agents.slice(0, this.cfg.armyCount);
     this.rng = createRng(this.cfg.seed);
+    this.armyRng = this.agents.map(() => createRng(this.rng.int(0, 0x7fffffff)));
   }
 
   /** Fase de preparación: cada agente forma su ejército y se despliega. */
@@ -109,8 +121,10 @@ export class GameEngine {
     });
 
     // Análisis previo del campo por cada agente.
+    this.unitIndex = new Map(this.state.units.map((u) => [u.id, u]));
+    const aggregates = this.computeArmyAggregates();
     this.agents.forEach((agent, i) => {
-      agent.onBattleStart?.(this.viewFor(i));
+      agent.onBattleStart?.(this.viewFor(i, aggregates));
     });
 
     this.state.phase = Phase.Battle;
@@ -129,13 +143,25 @@ export class GameEngine {
       return { turn: this.state.turn, events, startPositions };
     }
 
+    this.unitIndex = new Map(this.state.units.map((u) => [u.id, u]));
     this.state.turn += 1;
     events.push({ kind: "turn", turn: this.state.turn });
+
+    const aggregates = this.computeArmyAggregates();
+
+    // 0. Diplomacia: cada ejército propone/rompe alianzas sobre el estado de
+    // inicio de turno; se resuelve antes de recoger órdenes para que la
+    // exclusión de objetivos aliados vea los pactos ya formados este turno.
+    const diplomacyIntents = new Map<ArmyId, DiplomacyIntent[]>();
+    this.agents.forEach((agent, i) => {
+      diplomacyIntents.set(i, agent.planDiplomacy?.(this.viewFor(i, aggregates)) ?? []);
+    });
+    events.push(...resolveDiplomacy(diplomacyIntents, this.state));
 
     // 1. Recoger órdenes de todos los agentes sobre el mismo estado inicial.
     const orderSets = new Map<ArmyId, OrderSet>();
     this.agents.forEach((agent, i) => {
-      orderSets.set(i, agent.planTurn(this.viewFor(i)));
+      orderSets.set(i, agent.planTurn(this.viewFor(i, aggregates)));
     });
     const orderOf = (u: Unit): Order =>
       resolveOrder(orderSets.get(u.armyId) ?? {}, u.id, u.type);
@@ -170,6 +196,7 @@ export class GameEngine {
         const target = this.unitById(order.targetId);
         if (target && target.alive && target.armyId !== u.armyId) {
           if (distance(u.pos, target.pos) <= u.stats().range) {
+            this.maybeBetray(u.armyId, target.armyId, u.id, target.id, events);
             const p = captureProbability(u.rank, target.rank);
             const success = this.rng.chance(p);
             captureAttempts.push({ captor: u, target, p, success });
@@ -189,6 +216,7 @@ export class GameEngine {
 
       const target = this.attackTargetFor(u, order);
       if (target) {
+        this.maybeBetray(u.armyId, target.armyId, u.id, target.id, events);
         const dmg = computeDamage(u, target);
         addDamage(target, u, dmg);
         events.push({ kind: "attack", attackerId: u.id, targetId: target.id, damage: dmg });
@@ -317,14 +345,54 @@ export class GameEngine {
     return tie ? null : best;
   }
 
+  // --- Diplomacia ---
+
+  /**
+   * Si el atacante y el objetivo pertenecen a ejércitos actualmente aliados,
+   * el motor no bloquea el ataque pero rompe el pacto, sube la cuenta de
+   * traiciones del atacante y emite el evento `betrayal`.
+   */
+  private maybeBetray(
+    attackerArmyId: ArmyId,
+    defenderArmyId: ArmyId,
+    unitId: UnitId,
+    targetId: UnitId,
+    events: GameEvent[],
+  ): void {
+    if (attackerArmyId === defenderArmyId) return;
+    if (!areAllied(this.state, attackerArmyId, defenderArmyId)) return;
+    this.state.alliances.delete(pairKey(attackerArmyId, defenderArmyId));
+    this.state.betrayalCounts[attackerArmyId] =
+      (this.state.betrayalCounts[attackerArmyId] ?? 0) + 1;
+    events.push({
+      kind: "betrayal",
+      betrayerArmyId: attackerArmyId,
+      victimArmyId: defenderArmyId,
+      unitId,
+      targetId,
+    });
+  }
+
   // --- Utilidades ---
 
   private unitById(id: UnitId): Unit | undefined {
-    return this.state.units.find((u) => u.id === id);
+    return this.unitIndex.get(id);
   }
 
   private costOf(type: UnitType, rank: Rank): number {
     return Math.ceil(UNIT_DEFS[type].baseCost * costMultiplier(rank));
+  }
+
+  /** Fuerza (valor total) y nº de unidades vivas por ejército, calculado una vez por turno. */
+  private computeArmyAggregates(): ArmyAggregates {
+    const strength = new Map<ArmyId, number>();
+    const count = new Map<ArmyId, number>();
+    for (const u of this.state.units) {
+      if (!u.alive) continue;
+      strength.set(u.armyId, (strength.get(u.armyId) ?? 0) + u.value());
+      count.set(u.armyId, (count.get(u.armyId) ?? 0) + 1);
+    }
+    return { strength, count };
   }
 
   private buildContext(armyId: ArmyId) {
@@ -333,6 +401,7 @@ export class GameEngine {
       selfArmyId: armyId,
       armyCount: this.agents.length,
       fieldSize: this.cfg.fieldSize,
+      rng: this.armyRng[armyId],
       costOf: (type: UnitType, rank: Rank) => this.costOf(type, rank),
       statsOf: (type: UnitType, rank: Rank) => {
         const b = UNIT_DEFS[type].baseStats;
@@ -349,7 +418,7 @@ export class GameEngine {
   }
 
   /** Construye la vista de solo lectura del campo desde la óptica de un ejército. */
-  private viewFor(selfArmyId: ArmyId): BattlefieldView {
+  private viewFor(selfArmyId: ArmyId, aggregates: ArmyAggregates): BattlefieldView {
     const units: UnitView[] = this.state.units
       .filter((u) => u.alive)
       .map((u) => ({
@@ -362,22 +431,57 @@ export class GameEngine {
         maxHp: u.stats().maxHp,
         stats: u.stats(),
         cost: u.cost(),
+        hpFrac: u.hp / u.stats().maxHp,
       }));
     const cfg = this.cfg;
+    const alliances: Array<readonly [ArmyId, ArmyId]> = [...this.state.alliances].map((key) => {
+      const [a, b] = key.split(":").map(Number);
+      return [a, b] as const;
+    });
+    const reputations: Record<ArmyId, number> = { ...this.state.betrayalCounts };
     return {
       turn: this.state.turn,
       maxTurns: cfg.maxTurns,
       fieldSize: cfg.fieldSize,
       selfArmyId,
       units,
+      rng: this.armyRng[selfArmyId],
+      alliances,
+      reputations,
       own() {
         return this.units.filter((u) => u.armyId === selfArmyId);
       },
       enemies() {
         return this.units.filter((u) => u.armyId !== selfArmyId);
       },
+      armyStrength(armyId: ArmyId) {
+        return aggregates.strength.get(armyId) ?? 0;
+      },
+      unitCount(armyId: ArmyId) {
+        return aggregates.count.get(armyId) ?? 0;
+      },
+      nearestEnemyTo(pos) {
+        return nearestInList(pos, this.enemies());
+      },
+      nearestAllyTo(pos, excludeId) {
+        const candidates = this.own().filter((u) => u.id !== excludeId);
+        return nearestInList(pos, candidates);
+      },
     };
   }
+}
+
+function nearestInList(pos: Vec2, list: UnitView[]): UnitView | null {
+  let best: UnitView | null = null;
+  let bestDist = Infinity;
+  for (const u of list) {
+    const d = Math.hypot(u.pos.x - pos.x, u.pos.y - pos.y);
+    if (d < bestDist) {
+      bestDist = d;
+      best = u;
+    }
+  }
+  return best;
 }
 
 // Reexport puntual usado por heurísticas externas (evita import directo del engine).

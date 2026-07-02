@@ -1,11 +1,11 @@
 /** Parámetros globales de la partida. Editables sin tocar la lógica. */
 export const GAME_CONFIG = {
   /** Puntos disponibles para formar cada ejército en la fase de preparación. */
-  budget: 100,
+  budget: 1600,
   /** Número máximo de turnos de la fase de batalla. */
   maxTurns: 30,
   /** Lado del campo de batalla (cuadrado) en unidades de mundo. */
-  fieldSize: 720,
+  fieldSize: 1200,
   /** Nº de ejércitos por defecto (configurable entre min y max). */
   defaultArmies: 4,
   minArmies: 2,
