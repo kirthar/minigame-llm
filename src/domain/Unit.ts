@@ -60,8 +60,8 @@ export class Unit {
     return {
       maxHp: Math.round(b.maxHp * m),
       attack: Math.round(b.attack * m),
-      // Rango y movimiento escalan de forma más suave para no romper el equilibrio.
-      range: b.range,
+      range: this.def.rangeByRank[this.rank - 1],
+      // El movimiento escala de forma más suave para no romper el equilibrio.
       move: b.move,
       armor: b.armor,
     };

@@ -404,14 +404,14 @@ export class GameEngine {
       rng: this.armyRng[armyId],
       costOf: (type: UnitType, rank: Rank) => this.costOf(type, rank),
       statsOf: (type: UnitType, rank: Rank) => {
-        const b = UNIT_DEFS[type].baseStats;
+        const def = UNIT_DEFS[type];
         const m = statMultiplier(rank);
         return {
-          maxHp: Math.round(b.maxHp * m),
-          attack: Math.round(b.attack * m),
-          range: b.range,
-          move: b.move,
-          armor: b.armor,
+          maxHp: Math.round(def.baseStats.maxHp * m),
+          attack: Math.round(def.baseStats.attack * m),
+          range: def.rangeByRank[rank - 1],
+          move: def.baseStats.move,
+          armor: def.baseStats.armor,
         };
       },
     };

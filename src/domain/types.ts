@@ -53,12 +53,22 @@ export interface Stats {
   armor: number;
 }
 
-/** Definición inmutable de un tipo de tropa (valores a rango 1). */
+/** Alcance de ataque por rango: 5 valores, uno por rango (1..5). */
+export type RangeByRank = readonly [number, number, number, number, number];
+
+/** Definición inmutable de un tipo de tropa (valores a rango 1, salvo `range`). */
 export interface UnitTypeDef {
   type: UnitType;
   label: string;
   shape: Shape;
-  baseStats: Stats;
+  /** `maxHp`/`attack`/`move`/`armor` a rango 1; `range` se define aparte en `rangeByRank`. */
+  baseStats: Omit<Stats, "range">;
+  /**
+   * Alcance de ataque por rango. En unidades cuerpo a cuerpo es una distancia
+   * de contacto de hitbox constante (no escala con el rango); en unidades a
+   * distancia crece con el rango.
+   */
+  rangeByRank: RangeByRank;
   /** Coste en puntos a rango 1. */
   baseCost: number;
   /** Multiplicadores de daño frente a otros tipos (1 = neutro). */

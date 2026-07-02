@@ -19,9 +19,15 @@ function ctx(seed: number): ArmyBuildContext {
     rng: createRng(seed),
     costOf: (t, r) => Math.ceil(UNIT_DEFS[t].baseCost * costMultiplier(r)),
     statsOf: (t, r) => {
-      const b = UNIT_DEFS[t].baseStats;
+      const def = UNIT_DEFS[t];
       const m = statMultiplier(r);
-      return { maxHp: b.maxHp * m, attack: b.attack * m, range: b.range, move: b.move, armor: b.armor };
+      return {
+        maxHp: def.baseStats.maxHp * m,
+        attack: def.baseStats.attack * m,
+        range: def.rangeByRank[r - 1],
+        move: def.baseStats.move,
+        armor: def.baseStats.armor,
+      };
     },
   };
 }
