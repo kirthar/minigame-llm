@@ -49,7 +49,8 @@ describe("computeDamage", () => {
     const cav = make(UnitType.Cavalry);
     const heavy = make(UnitType.Heavy); // neutro, armor 2
     const still = computeDamage(cav, heavy);
-    cav.distanceMovedThisTurn = 12;
+    // Distancia acorde a la nueva escala de movimiento (move de caballería = 360).
+    cav.distanceMovedThisTurn = 200;
     const charging = computeDamage(cav, heavy);
     expect(charging).toBeGreaterThan(still);
   });
