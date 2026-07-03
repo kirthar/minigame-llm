@@ -104,38 +104,7 @@ export class CanvasRenderer {
 
       ctx.drawImage(sprite, -SPRITE_SIZE / 2, -SPRITE_SIZE / 2, SPRITE_SIZE, SPRITE_SIZE);
       ctx.restore();
-
-      this.drawRankBadge(unit, x, y);
     }
-
-    this.drawHpBar(unit, x, y);
-  }
-
-  private drawRankBadge(unit: Unit, x: number, y: number): void {
-    const { ctx } = this;
-    const bx = x + SPRITE_SIZE * 0.32;
-    const by = y - SPRITE_SIZE * 0.42;
-    ctx.beginPath();
-    ctx.arc(bx, by, 6, 0, Math.PI * 2);
-    ctx.fillStyle = "#0b0e12";
-    ctx.fill();
-    ctx.fillStyle = "#e6edf3";
-    ctx.font = "bold 8px system-ui, sans-serif";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(String(unit.rank), bx, by + 0.5);
-  }
-
-  private drawHpBar(unit: Unit, x: number, y: number): void {
-    const { ctx } = this;
-    const w = 20;
-    const h = 3;
-    const frac = Math.max(0, Math.min(1, unit.hp / unit.stats().maxHp));
-    const top = y - SPRITE_SIZE / 2 - 8;
-    ctx.fillStyle = "#2b333d";
-    ctx.fillRect(x - w / 2, top, w, h);
-    ctx.fillStyle = frac > 0.5 ? "#7ee787" : frac > 0.25 ? "#ffd166" : "#ff6b6b";
-    ctx.fillRect(x - w / 2, top, w * frac, h);
   }
 
   private drawGrid(): void {
