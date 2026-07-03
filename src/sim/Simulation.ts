@@ -142,12 +142,15 @@ export class Simulation {
     });
 
     // Prefetch armies for LLM agents before engine.setup() calls buildArmy()
-    const prefetches = agents.map((a, i) =>
-      a instanceof NvidiaLlmAgent
-        ? a.prefetchArmy(newEngine.createBuildContextFor(i) as ArmyBuildContext)
-        : Promise.resolve(),
+    const llmAgentsForBuild = agents
+      .map((a, i) => (a instanceof NvidiaLlmAgent ? { agent: a, i } : null))
+      .filter((x): x is { agent: NvidiaLlmAgent; i: number } => x !== null);
+
+    await Promise.all(
+      llmAgentsForBuild.map(({ agent, i }) =>
+        agent.prefetchArmy(newEngine.createBuildContextFor(i) as ArmyBuildContext),
+      ),
     );
-    await Promise.all(prefetches);
 
     newEngine.setup();
     this.engine = newEngine;
@@ -163,6 +166,15 @@ export class Simulation {
     this.log = new EventLog(this.logEl, (id) => this.labelFor(id));
     this.log.clear();
     this.log.line("Fase de preparación completada. ¡A la batalla!", "turn-sep");
+
+    // Log LLM build army I/O
+    for (const { agent, i } of llmAgentsForBuild) {
+      const color = colors[i] ?? "#888";
+      if (agent.lastBuildArmyIO) {
+        this.log.llmDecision(agent.name, color, agent.lastBuildArmyIO);
+      }
+    }
+
     for (const army of this.engine.state.armies) {
       const count = this.engine.state.units.filter((u) => u.armyId === army.id).length;
       this.log.line(`Ejército ${army.id} · ${army.name}: ${count} unidades`);
@@ -190,6 +202,14 @@ export class Simulation {
           llmAgents.map(({ agent, i }) => agent.prefetchTurn(this.engine.createViewFor(i))),
         );
         this.thinking = false;
+
+        // Log turn I/O for each LLM agent
+        for (const { agent, i } of llmAgents) {
+          const color = ARMY_COLOR_CACHE.get(i) ?? "#888";
+          for (const io of agent.lastPlanTurnIO) {
+            this.log.llmDecision(agent.name, color, io);
+          }
+        }
       }
 
       const result = this.engine.tick();
@@ -316,6 +336,8 @@ export class Simulation {
     if (!this.engine) return unitId;
     const u = this.engine.state.units.find((x) => x.id === unitId);
     if (!u) return unitId;
-    return `E${u.armyId}·${UNIT_DEFS[u.type].label} r${u.rank}`;
+    const army = this.engine.state.armyById(u.armyId);
+    const tag = army?.name ?? `E${u.armyId}`;
+    return `${tag}·${UNIT_DEFS[u.type].label} r${u.rank}`;
   }
 }

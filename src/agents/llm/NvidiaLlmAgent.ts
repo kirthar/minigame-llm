@@ -2,10 +2,17 @@ import type { Agent, ArmyBlueprint, ArmyBuildContext, BattlefieldView } from "..
 import { OrderType, type OrderSet } from "../../orders/orders.ts";
 import type { DiplomacyIntent } from "../../domain/diplomacy.ts";
 import type { NvidiaModelDef } from "../../config/models.ts";
+import type { LlmCompletionRequest } from "./LlmClient.ts";
 import { NvidiaClient } from "./NvidiaClient.ts";
-import { LlmAgent } from "./LlmAgent.ts";
-import { toArmyBuildRequest } from "./dto.ts";
-import { parseArmyBlueprint } from "./responseParser.ts";
+import { toArmyBuildRequest, toBattlefieldSnapshot } from "./dto.ts";
+import { buildArmyPrompt, buildDiplomacyPrompt, buildTurnPrompt } from "./promptBuilder.ts";
+import { parseArmyBlueprint, parseDiplomacyIntents, parseOrderSet } from "./responseParser.ts";
+
+export interface LlmIO {
+  label: string;
+  req: LlmCompletionRequest;
+  response: string;
+}
 
 /**
  * Agente respaldado por un modelo de NVIDIA (API OpenAI-compatible).
@@ -16,22 +23,27 @@ import { parseArmyBlueprint } from "./responseParser.ts";
  * de modo que las llamadas síncronas del motor encuentran los resultados ya
  * listos. Si el prefetch no se ha completado (error de red, timeout), los
  * métodos síncronos usan un fallback seguro (round-robin rango 1 / Hold).
+ *
+ * El I/O de cada llamada queda accesible en `lastBuildArmyIO` /
+ * `lastPlanTurnIO` para que `Simulation` pueda registrarlo en el EventLog.
  */
 export class NvidiaLlmAgent implements Agent {
   readonly name: string;
-  private readonly inner: LlmAgent;
+  private readonly client: NvidiaClient;
   private cachedArmy: ArmyBlueprint | null = null;
   private cachedOrders: OrderSet | null = null;
   private cachedDiplomacy: DiplomacyIntent[] | null = null;
 
+  lastBuildArmyIO: LlmIO | null = null;
+  lastPlanTurnIO: LlmIO[] = [];
+
   constructor(model: NvidiaModelDef) {
     this.name = model.label;
-    this.inner = new LlmAgent(model.label, new NvidiaClient(model));
+    this.client = new NvidiaClient(model);
   }
 
   buildArmy(ctx: ArmyBuildContext): ArmyBlueprint {
     if (this.cachedArmy) return this.cachedArmy;
-    // Fallback: round-robin de tropas rango 1 (solo si el prefetch falló)
     return this.fallbackArmy(ctx);
   }
 
@@ -47,23 +59,38 @@ export class NvidiaLlmAgent implements Agent {
     return cached ?? [];
   }
 
-  /** Llama al LLM para construir el ejército y cachea el resultado. */
   async prefetchArmy(ctx: ArmyBuildContext): Promise<void> {
+    this.lastBuildArmyIO = null;
     try {
-      this.cachedArmy = await this.inner.buildArmyAsync(ctx);
+      const req = buildArmyPrompt(toArmyBuildRequest(ctx));
+      const response = await this.client.complete(req);
+      this.lastBuildArmyIO = { label: "Construir ejército", req, response };
+      this.cachedArmy = parseArmyBlueprint(response);
     } catch (err) {
       console.error(`[${this.name}] Error en buildArmy:`, err);
       this.cachedArmy = null;
     }
   }
 
-  /** Llama al LLM para planificar el turno y diplomacia, y cachea ambos resultados. */
   async prefetchTurn(view: BattlefieldView): Promise<void> {
+    this.lastPlanTurnIO = [];
     try {
-      [this.cachedOrders, this.cachedDiplomacy] = await Promise.all([
-        this.inner.planTurnAsync(view),
-        this.inner.planDiplomacyAsync(view),
+      const dto = toBattlefieldSnapshot(view);
+      const turnReq = buildTurnPrompt(dto);
+      const diplomacyReq = buildDiplomacyPrompt(dto);
+
+      const [turnResponse, diplomacyResponse] = await Promise.all([
+        this.client.complete(turnReq),
+        this.client.complete(diplomacyReq),
       ]);
+
+      this.lastPlanTurnIO = [
+        { label: "Órdenes de turno", req: turnReq, response: turnResponse },
+        { label: "Diplomacia", req: diplomacyReq, response: diplomacyResponse },
+      ];
+
+      this.cachedOrders = parseOrderSet(turnResponse);
+      this.cachedDiplomacy = parseDiplomacyIntents(diplomacyResponse);
     } catch (err) {
       console.error(`[${this.name}] Error en planTurn:`, err);
       this.cachedOrders = null;

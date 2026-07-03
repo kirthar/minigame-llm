@@ -1,4 +1,5 @@
 import type { GameEvent } from "../engine/events.ts";
+import type { LlmIO } from "../agents/llm/NvidiaLlmAgent.ts";
 
 export type LabelFor = (unitId: string) => string;
 
@@ -18,6 +19,45 @@ export class EventLog {
     div.className = cls;
     div.textContent = text;
     this.container.appendChild(div);
+    this.container.scrollTop = this.container.scrollHeight;
+  }
+
+  /** Añade un bloque expandible con el I/O de una llamada LLM. */
+  llmDecision(armyName: string, color: string, io: LlmIO): void {
+    const details = document.createElement("details");
+    details.className = "llm-details";
+
+    const summary = document.createElement("summary");
+    summary.className = "llm-summary";
+
+    const dot = document.createElement("span");
+    dot.className = "llm-dot";
+    dot.style.background = color;
+
+    const label = document.createElement("span");
+    label.textContent = `${armyName} · ${io.label}`;
+    summary.append(dot, label);
+    details.appendChild(summary);
+
+    const content = document.createElement("div");
+    content.className = "llm-content";
+
+    const addSection = (heading: string, text: string) => {
+      const h = document.createElement("div");
+      h.className = "llm-section-label";
+      h.textContent = heading;
+      const pre = document.createElement("pre");
+      pre.className = "llm-pre";
+      pre.textContent = text;
+      content.append(h, pre);
+    };
+
+    addSection("Sistema:", io.req.systemPrompt);
+    addSection("Entrada:", io.req.userPrompt);
+    addSection("Respuesta:", io.response);
+
+    details.appendChild(content);
+    this.container.appendChild(details);
     this.container.scrollTop = this.container.scrollHeight;
   }
 
