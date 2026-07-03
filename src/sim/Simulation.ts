@@ -3,7 +3,7 @@ import { GAME_CONFIG } from "../config/game.ts";
 import { UNIT_DEFS } from "../config/units.ts";
 import { GameEngine } from "../engine/GameEngine.ts";
 import type { TurnResult } from "../engine/GameEngine.ts";
-import { Phase } from "../domain/types.ts";
+import { Phase, UnitType } from "../domain/types.ts";
 import type { UnitId } from "../domain/types.ts";
 import { ARMY_COLOR_CACHE, CanvasRenderer } from "../render/CanvasRenderer.ts";
 import { Controls } from "../ui/Controls.ts";
@@ -31,6 +31,7 @@ export class Simulation {
     controlsEl: HTMLElement,
     private readonly logEl: HTMLElement,
     private readonly statusEl: HTMLElement,
+    private readonly armySummaryEl: HTMLElement,
   ) {
     this.renderer = new CanvasRenderer(canvas, GAME_CONFIG.fieldSize);
     this.controls = new Controls(controlsEl, {
@@ -121,6 +122,7 @@ export class Simulation {
 
     this.renderer.draw(this.engine.state);
     this.updateStatus();
+    this.updateArmySummary();
   }
 
   /** Ejecuta un turno y anima su transición. */
@@ -130,6 +132,7 @@ export class Simulation {
     this.log.push(result.events);
     this.active = { result, elapsed: 0 };
     this.updateStatus();
+    this.updateArmySummary();
   }
 
   private frame(ts: number): void {
@@ -175,6 +178,53 @@ export class Simulation {
     } else {
       const alive = s.livingArmyIds().length;
       this.statusEl.textContent = `Turno ${s.turn}/${this.maxTurns} · ${alive} ejércitos en pie`;
+    }
+  }
+
+  private updateArmySummary(): void {
+    const s = this.engine.state;
+    const typeOrder = [UnitType.Light, UnitType.Heavy, UnitType.Archer, UnitType.Cavalry];
+    this.armySummaryEl.innerHTML = "";
+
+    for (const army of s.armies) {
+      const aliveUnits = s.units.filter((u) => u.armyId === army.id && u.alive);
+      const totalUnits = s.units.filter((u) => u.armyId === army.id);
+      const color = ARMY_COLOR_CACHE.get(army.id) ?? "#888";
+
+      const row = document.createElement("div");
+      row.className = "army-row" + (aliveUnits.length === 0 ? " army-row--eliminated" : "");
+
+      const header = document.createElement("div");
+      header.className = "army-row-header";
+
+      const dot = document.createElement("span");
+      dot.className = "army-dot";
+      dot.style.background = color;
+
+      const nameSpan = document.createElement("span");
+      nameSpan.className = "army-name";
+      nameSpan.textContent = `E${army.id} · ${army.name}`;
+
+      const countSpan = document.createElement("span");
+      countSpan.className = "army-count";
+      countSpan.textContent = `${aliveUnits.length}/${totalUnits.length}`;
+
+      header.append(dot, nameSpan, countSpan);
+      row.appendChild(header);
+
+      if (aliveUnits.length > 0) {
+        const breakdown = document.createElement("div");
+        breakdown.className = "army-breakdown";
+        const parts: string[] = [];
+        for (const type of typeOrder) {
+          const n = aliveUnits.filter((u) => u.type === type).length;
+          if (n > 0) parts.push(`${UNIT_DEFS[type].label}: ${n}`);
+        }
+        breakdown.textContent = parts.join(" · ");
+        row.appendChild(breakdown);
+      }
+
+      this.armySummaryEl.appendChild(row);
     }
   }
 
