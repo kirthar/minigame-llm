@@ -1,4 +1,4 @@
-import type { Agent } from "../agents/Agent.ts";
+import type { Agent, ArmyBuildContext } from "../agents/Agent.ts";
 import type { BattlefieldView, UnitView } from "../agents/Agent.ts";
 import { UNIT_DEFS } from "../config/units.ts";
 import { GAME_CONFIG, XP_PER_KILL_COST_FACTOR } from "../config/game.ts";
@@ -456,6 +456,16 @@ export class GameEngine {
   }
 
   /** Construye la vista de solo lectura del campo desde la óptica de un ejército. */
+  /** Vista del campo desde la óptica del ejército `armyId` con el estado actual (para prefetch LLM). */
+  createViewFor(armyId: ArmyId): BattlefieldView {
+    return this.viewFor(armyId, this.computeArmyAggregates());
+  }
+
+  /** Contexto de construcción para el ejército `armyId` (puede llamarse antes de setup). */
+  createBuildContextFor(armyId: ArmyId): ArmyBuildContext {
+    return this.buildContext(armyId);
+  }
+
   private viewFor(selfArmyId: ArmyId, aggregates: ArmyAggregates): BattlefieldView {
     const units: UnitView[] = this.state.units
       .filter((u) => u.alive)

@@ -1,22 +1,29 @@
-import { defaultAgentFor } from "../agents/index.ts";
+import { UtilityAgent } from "../agents/UtilityAgent.ts";
+import { NvidiaLlmAgent } from "../agents/llm/NvidiaLlmAgent.ts";
 import { GAME_CONFIG } from "../config/game.ts";
+import { NVIDIA_MODELS } from "../config/models.ts";
 import { UNIT_DEFS } from "../config/units.ts";
 import { GameEngine } from "../engine/GameEngine.ts";
 import type { TurnResult } from "../engine/GameEngine.ts";
 import { Phase, UnitType } from "../domain/types.ts";
+import type { Agent, ArmyBuildContext } from "../agents/Agent.ts";
 import type { UnitId } from "../domain/types.ts";
 import { ARMY_COLOR_CACHE, CanvasRenderer } from "../render/CanvasRenderer.ts";
+import { ARMY_COLORS } from "../render/palette.ts";
 import { Controls } from "../ui/Controls.ts";
 import { EventLog } from "../ui/EventLog.ts";
+import { AgentSelector } from "../ui/AgentSelector.ts";
 
-const BASE_TURN_MS = 700; // duración de un turno a velocidad ×1
+const BASE_TURN_MS = 700;
 
 /** Une motor, render, controles y log; gestiona el bucle de animación. */
 export class Simulation {
   private engine!: GameEngine;
   private renderer: CanvasRenderer;
   private controls: Controls;
+  private agentSelector: AgentSelector;
   private log!: EventLog;
+  private currentAgents: Agent[] = [];
 
   private playing = false;
   private speed = 1;
@@ -25,6 +32,9 @@ export class Simulation {
   private active: { result: TurnResult; elapsed: number } | null = null;
   private lastTs = 0;
   private hoveredUnitId: UnitId | null = null;
+  private stepping = false;
+  private loading = false;
+  private thinking = false;
   private readonly tooltip: HTMLDivElement;
 
   constructor(
@@ -33,15 +43,20 @@ export class Simulation {
     private readonly logEl: HTMLElement,
     private readonly statusEl: HTMLElement,
     private readonly armySummaryEl: HTMLElement,
+    agentSelectorEl: HTMLElement,
   ) {
     this.renderer = new CanvasRenderer(canvas, GAME_CONFIG.fieldSize);
     this.controls = new Controls(controlsEl, {
       onPlayPause: (p) => (this.playing = p),
-      onStep: () => this.step(),
+      onStep: () => { void this.step(); },
       onRestart: (n) => this.restart(n),
       onSpeed: (m) => (this.speed = m),
       onMaxTurns: (n) => { this.maxTurns = n; },
       onBudget: (n) => { this.budget = n; },
+    });
+
+    this.agentSelector = new AgentSelector(agentSelectorEl, (_i, _key) => {
+      // No auto-restart on agent change; selection is applied on next restart.
     });
 
     this.tooltip = document.createElement("div");
@@ -59,6 +74,7 @@ export class Simulation {
   }
 
   private onMouseMove(e: MouseEvent): void {
+    if (!this.engine) return;
     const rect = this.canvas.getBoundingClientRect();
     const cssToCanvas = this.canvas.width / rect.width;
     const canvasX = (e.clientX - rect.left) * cssToCanvas;
@@ -101,18 +117,48 @@ export class Simulation {
     }
   }
 
+  /** Lanza el reinicio (asíncrono si hay agentes LLM). */
   private restart(armyCount: number): void {
-    const agents = Array.from({ length: armyCount }, (_, i) => defaultAgentFor(i));
-    this.engine = new GameEngine(agents, { armyCount, maxTurns: this.maxTurns, budget: this.budget });
-    this.engine.setup();
-    this.active = null;
     this.playing = false;
     this.controls.setPlaying(false);
+    this.active = null;
+    this.tooltip.style.display = "none";
+    void this.doRestart(armyCount);
+  }
+
+  private async doRestart(armyCount: number): Promise<void> {
+    this.loading = true;
+    this.updateStatus();
+
+    const agents: Agent[] = Array.from({ length: armyCount }, (_, i) =>
+      this.createAgentForKey(this.agentSelector.getKey(i), i),
+    );
+    this.currentAgents = agents;
+
+    const newEngine = new GameEngine(agents, {
+      armyCount,
+      maxTurns: this.maxTurns,
+      budget: this.budget,
+    });
+
+    // Prefetch armies for LLM agents before engine.setup() calls buildArmy()
+    const prefetches = agents.map((a, i) =>
+      a instanceof NvidiaLlmAgent
+        ? a.prefetchArmy(newEngine.createBuildContextFor(i) as ArmyBuildContext)
+        : Promise.resolve(),
+    );
+    await Promise.all(prefetches);
+
+    newEngine.setup();
+    this.engine = newEngine;
 
     ARMY_COLOR_CACHE.clear();
     for (const army of this.engine.state.armies) {
       ARMY_COLOR_CACHE.set(army.id, army.color);
     }
+
+    const colors = Array.from({ length: armyCount }, (_, i) => ARMY_COLORS[i % ARMY_COLORS.length]);
+    this.agentSelector.update(armyCount, colors);
 
     this.log = new EventLog(this.logEl, (id) => this.labelFor(id));
     this.log.clear();
@@ -122,30 +168,50 @@ export class Simulation {
       this.log.line(`Ejército ${army.id} · ${army.name}: ${count} unidades`);
     }
 
+    this.loading = false;
     this.renderer.draw(this.engine.state);
     this.updateStatus();
     this.updateArmySummary();
   }
 
-  /** Ejecuta un turno y anima su transición. */
-  private step(): void {
-    if (this.active || this.engine.state.finished) return;
-    const result = this.engine.tick();
-    this.log.push(result.events);
-    this.active = { result, elapsed: 0 };
-    this.updateStatus();
-    this.updateArmySummary();
+  /** Ejecuta un turno: prefetch LLM → tick → animar. */
+  private async step(): Promise<void> {
+    if (!this.engine || this.active || this.engine.state.finished || this.stepping || this.loading) return;
+    this.stepping = true;
+    try {
+      const llmAgents = this.currentAgents
+        .map((a, i) => (a instanceof NvidiaLlmAgent ? { agent: a, i } : null))
+        .filter((x): x is { agent: NvidiaLlmAgent; i: number } => x !== null);
+
+      if (llmAgents.length) {
+        this.thinking = true;
+        this.updateStatus();
+        await Promise.all(
+          llmAgents.map(({ agent, i }) => agent.prefetchTurn(this.engine.createViewFor(i))),
+        );
+        this.thinking = false;
+      }
+
+      const result = this.engine.tick();
+      this.log.push(result.events);
+      this.active = { result, elapsed: 0 };
+      this.updateStatus();
+      this.updateArmySummary();
+    } finally {
+      this.stepping = false;
+      this.thinking = false;
+    }
   }
 
   private frame(ts: number): void {
     const dt = this.lastTs ? ts - this.lastTs : 0;
     this.lastTs = ts;
 
-    if (!this.active && this.playing && !this.engine.state.finished) {
-      this.step();
+    if (this.engine && !this.active && this.playing && !this.engine.state.finished && !this.stepping && !this.loading) {
+      void this.step();
     }
 
-    if (this.active) {
+    if (this.engine && this.active) {
       const duration = BASE_TURN_MS / this.speed;
       this.active.elapsed += dt;
       const t = Math.min(1, this.active.elapsed / duration);
@@ -157,11 +223,11 @@ export class Simulation {
         hoveredUnitId: this.hoveredUnitId,
       });
       if (t >= 1) this.active = null;
-    } else {
+    } else if (this.engine) {
       this.renderer.draw(this.engine.state, { ts, hoveredUnitId: this.hoveredUnitId });
     }
 
-    if (this.engine.state.finished && this.playing) {
+    if (this.engine && this.engine.state.finished && this.playing) {
       this.playing = false;
       this.controls.setPlaying(false);
       this.updateStatus();
@@ -171,6 +237,15 @@ export class Simulation {
   }
 
   private updateStatus(): void {
+    if (this.loading) {
+      this.statusEl.textContent = "⏳ Preparando ejércitos…";
+      return;
+    }
+    if (this.thinking) {
+      this.statusEl.textContent = "⏳ LLMs pensando…";
+      return;
+    }
+    if (!this.engine) return;
     const s = this.engine.state;
     if (s.phase === Phase.Finished) {
       this.statusEl.textContent =
@@ -184,6 +259,7 @@ export class Simulation {
   }
 
   private updateArmySummary(): void {
+    if (!this.engine) return;
     const s = this.engine.state;
     const typeOrder = [UnitType.Light, UnitType.Heavy, UnitType.Archer, UnitType.Cavalry];
     this.armySummaryEl.innerHTML = "";
@@ -230,7 +306,14 @@ export class Simulation {
     }
   }
 
+  private createAgentForKey(key: string, index: number): Agent {
+    const model = NVIDIA_MODELS.find((m) => m.id === key);
+    if (model) return new NvidiaLlmAgent(model);
+    return new UtilityAgent(`Utilidad ${index}`);
+  }
+
   private labelFor(unitId: string): string {
+    if (!this.engine) return unitId;
     const u = this.engine.state.units.find((x) => x.id === unitId);
     if (!u) return unitId;
     return `E${u.armyId}·${UNIT_DEFS[u.type].label} r${u.rank}`;

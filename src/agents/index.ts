@@ -1,6 +1,7 @@
 import { HeuristicAgent, type Doctrine } from "./HeuristicAgent.ts";
 import { UtilityAgent } from "./UtilityAgent.ts";
 import { MockLlmAgent } from "./llm/MockLlmAgent.ts";
+import { NvidiaLlmAgent } from "./llm/NvidiaLlmAgent.ts";
 import type { Agent, AgentFactory } from "./Agent.ts";
 
 /**
@@ -26,5 +27,5 @@ export function defaultAgentFor(index: number): Agent {
   return new UtilityAgent(`Utilidad ${index}`);
 }
 
-export { HeuristicAgent, UtilityAgent, MockLlmAgent };
+export { HeuristicAgent, UtilityAgent, MockLlmAgent, NvidiaLlmAgent };
 export type { Doctrine };

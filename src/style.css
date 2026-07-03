@@ -194,6 +194,36 @@ canvas#battlefield {
   font-weight: 600;
 }
 
+.agent-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.agent-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.agent-select {
+  flex: 1;
+  background: var(--panel-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 12px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.agent-select:hover {
+  border-color: var(--accent);
+}
+
 .army-summary {
   display: flex;
   flex-direction: column;
