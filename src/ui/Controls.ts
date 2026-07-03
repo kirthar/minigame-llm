@@ -6,6 +6,7 @@ export interface ControlCallbacks {
   onRestart: (armyCount: number) => void;
   onSpeed: (multiplier: number) => void;
   onMaxTurns: (n: number) => void;
+  onBudget: (n: number) => void;
 }
 
 /** Barra de controles: play/pausa, paso a paso, reinicio, nº ejércitos y velocidad. */
@@ -60,12 +61,30 @@ export class Controls {
     });
     const turnsLabel = label("Turnos:", turnsInput);
 
+    const budgetInput = document.createElement("input");
+    budgetInput.type = "number";
+    budgetInput.min = String(GAME_CONFIG.minBudget);
+    budgetInput.max = String(GAME_CONFIG.maxBudget);
+    budgetInput.step = "100";
+    budgetInput.value = String(GAME_CONFIG.budget);
+    budgetInput.style.width = "70px";
+    budgetInput.addEventListener("change", () => {
+      const n = Math.max(
+        GAME_CONFIG.minBudget,
+        Math.min(GAME_CONFIG.maxBudget, Number(budgetInput.value) || GAME_CONFIG.budget),
+      );
+      budgetInput.value = String(n);
+      this.cb.onBudget(n);
+    });
+    const budgetLabel = label("Presupuesto:", budgetInput);
+
     container.append(
       this.playBtn,
       this.stepBtn,
       restartBtn,
       armyLabel,
       turnsLabel,
+      budgetLabel,
       speedLabel,
     );
   }

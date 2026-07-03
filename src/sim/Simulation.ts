@@ -21,6 +21,7 @@ export class Simulation {
   private playing = false;
   private speed = 1;
   private maxTurns: number = GAME_CONFIG.maxTurns;
+  private budget: number = GAME_CONFIG.budget;
   private active: { result: TurnResult; elapsed: number } | null = null;
   private lastTs = 0;
   private hoveredUnitId: UnitId | null = null;
@@ -40,6 +41,7 @@ export class Simulation {
       onRestart: (n) => this.restart(n),
       onSpeed: (m) => (this.speed = m),
       onMaxTurns: (n) => { this.maxTurns = n; },
+      onBudget: (n) => { this.budget = n; },
     });
 
     this.tooltip = document.createElement("div");
@@ -101,7 +103,7 @@ export class Simulation {
 
   private restart(armyCount: number): void {
     const agents = Array.from({ length: armyCount }, (_, i) => defaultAgentFor(i));
-    this.engine = new GameEngine(agents, { armyCount, maxTurns: this.maxTurns });
+    this.engine = new GameEngine(agents, { armyCount, maxTurns: this.maxTurns, budget: this.budget });
     this.engine.setup();
     this.active = null;
     this.playing = false;
