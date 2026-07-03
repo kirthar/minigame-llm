@@ -49,7 +49,7 @@ export const UNIT_DEFS: Record<UnitType, UnitTypeDef> = {
     type: UnitType.Light,
     label: "Inf. ligera",
     shape: Shape.Circle,
-    baseStats: { maxHp: 21, attack: 3, move: 300, armor: 0 },
+    baseStats: { maxHp: 21, attack: 3, move: 300, armor: 1 },
     rangeByRank: MELEE_RANGE_BY_RANK,
     baseCost: 6,
     // Barata y numerosa; cierra distancias con los arqueros.
@@ -60,7 +60,7 @@ export const UNIT_DEFS: Record<UnitType, UnitTypeDef> = {
     type: UnitType.Heavy,
     label: "Inf. pesada",
     shape: Shape.Square,
-    baseStats: { maxHp: 43, attack: 5, move: 120, armor: 2 },
+    baseStats: { maxHp: 43, attack: 5, move: 120, armor: 4 },
     rangeByRank: MELEE_RANGE_BY_RANK,
     baseCost: 15,
     // Muro anti-carga contra caballería.
