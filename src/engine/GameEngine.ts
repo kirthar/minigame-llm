@@ -5,7 +5,13 @@ import { GAME_CONFIG, XP_PER_KILL_COST_FACTOR } from "../config/game.ts";
 import { costMultiplier, statMultiplier } from "../config/ranks.ts";
 import { armyValue } from "../domain/Army.ts";
 import { Army } from "../domain/Army.ts";
-import { areAllied, pairKey, resolveDiplomacy, type DiplomacyIntent } from "../domain/diplomacy.ts";
+import {
+  areAllied,
+  isProtected,
+  pairKey,
+  resolveDiplomacy,
+  type DiplomacyIntent,
+} from "../domain/diplomacy.ts";
 import { GameState } from "../domain/GameState.ts";
 import { Unit } from "../domain/Unit.ts";
 import {
@@ -170,6 +176,25 @@ export class GameEngine {
     const orderOf = (u: Unit): Order =>
       resolveOrder(orderSets.get(u.armyId) ?? {}, u.id, u.type);
 
+    // 1.5 Neutraliza a Hold las órdenes de Attack/Capture cuyo objetivo explícito
+    // sea un aliado dentro de su ventana de protección (recién formada esta
+    // misma ronda o de un turno anterior): la unidad reacciona con normalidad
+    // a cualquier OTRO enemigo válido en rango en vez de marchar hacia su
+    // aliado o quedarse congelada.
+    for (const u of this.state.units) {
+      if (!u.alive) continue;
+      const order = orderOf(u);
+      if (order.kind !== OrderType.Attack && order.kind !== OrderType.Capture) continue;
+      const targetId = order.targetId;
+      if (!targetId) continue;
+      const target = this.unitById(targetId);
+      if (!target || target.armyId === u.armyId) continue;
+      if (!isProtected(this.state, u.armyId, target.armyId)) continue;
+      const set = orderSets.get(u.armyId) ?? {};
+      set.byUnit = { ...set.byUnit, [u.id]: { kind: OrderType.Hold } };
+      orderSets.set(u.armyId, set);
+    }
+
     // 2. Fase de movimiento.
     for (const u of this.state.units) {
       if (!u.alive) continue;
@@ -199,7 +224,12 @@ export class GameEngine {
 
       if (order.kind === OrderType.Capture) {
         const target = this.unitById(order.targetId);
-        if (target && target.alive && target.armyId !== u.armyId) {
+        if (
+          target &&
+          target.alive &&
+          target.armyId !== u.armyId &&
+          !isProtected(this.state, u.armyId, target.armyId)
+        ) {
           if (distance(u.pos, target.pos) <= u.stats().range) {
             this.maybeBetray(u.armyId, target.armyId, u.id, target.id, events);
             const p = captureProbability(u.rank, target.rank);
@@ -279,7 +309,10 @@ export class GameEngine {
   private attackTargetFor(u: Unit, order: Order): Unit | null {
     const range = u.stats().range;
     const inRange = (t: Unit) =>
-      t.alive && t.armyId !== u.armyId && distance(u.pos, t.pos) <= range;
+      t.alive &&
+      t.armyId !== u.armyId &&
+      distance(u.pos, t.pos) <= range &&
+      !isProtected(this.state, u.armyId, t.armyId);
 
     if (order.kind === OrderType.Attack && order.targetId) {
       const explicit = this.unitById(order.targetId);
@@ -439,7 +472,7 @@ export class GameEngine {
         hpFrac: u.hp / u.stats().maxHp,
       }));
     const cfg = this.cfg;
-    const alliances: Array<readonly [ArmyId, ArmyId]> = [...this.state.alliances].map((key) => {
+    const alliances: Array<readonly [ArmyId, ArmyId]> = [...this.state.alliances.keys()].map((key) => {
       const [a, b] = key.split(":").map(Number);
       return [a, b] as const;
     });

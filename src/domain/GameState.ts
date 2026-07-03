@@ -12,8 +12,8 @@ export class GameState {
   winner: ArmyId | null = null;
   finished = false;
 
-  /** Pares de ejércitos actualmente aliados (clave: `pairKey(a,b)`). */
-  readonly alliances = new Set<string>();
+  /** Pares de ejércitos actualmente aliados (clave: `pairKey(a,b)` → turno en que se formó el pacto). */
+  readonly alliances = new Map<string, number>();
   /** Nº de traiciones cometidas por cada ejército (atacar a un aliado). */
   readonly betrayalCounts: Record<ArmyId, number> = {};
 

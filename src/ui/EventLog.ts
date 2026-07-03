@@ -72,6 +72,12 @@ export class EventLog {
       case "alliance-broken":
         this.line(`⚔ Alianza rota entre Ejército ${e.a} y Ejército ${e.b}`, "evt-alliance");
         break;
+      case "alliance-protected":
+        this.line(
+          `🛡 Ejército ${e.a} intenta romper la alianza con Ejército ${e.b}, pero sigue protegida hasta el turno ${e.unprotectedAtTurn}`,
+          "evt-alliance",
+        );
+        break;
       case "betrayal":
         this.line(
           `🗡 ¡Traición! ${this.labelFor(e.unitId)} (Ejército ${e.betrayerArmyId}) rompe la alianza atacando a ${this.labelFor(e.targetId)} (Ejército ${e.victimArmyId})`,

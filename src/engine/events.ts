@@ -62,6 +62,19 @@ export interface AllianceBrokenEvent {
 }
 
 /**
+ * Un ejército intentó romper (`break`) una alianza que sigue dentro de su
+ * ventana de protección y el motor ignoró la intención: la alianza sigue
+ * activa. `unprotectedAtTurn` es el primer turno en que un `break` (o una
+ * traición) contra este pacto sí surtirá efecto.
+ */
+export interface AllianceProtectedEvent {
+  kind: "alliance-protected";
+  a: ArmyId;
+  b: ArmyId;
+  unprotectedAtTurn: number;
+}
+
+/**
  * `betrayerArmyId` atacó o intentó capturar a una unidad de `victimArmyId`
  * mientras ambos ejércitos estaban aliados. El motor no bloquea el ataque: lo
  * deja proceder, rompe la alianza y emite este evento (además del `attack`/
@@ -95,5 +108,6 @@ export type GameEvent =
   | RankUpEvent
   | AllianceFormedEvent
   | AllianceBrokenEvent
+  | AllianceProtectedEvent
   | BetrayalEvent
   | FinishedEvent;

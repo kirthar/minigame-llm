@@ -17,7 +17,10 @@ export interface ProposeAllianceIntent {
 /**
  * Rompe unilateralmente una alianza activa con `withArmyId` (sin penalización:
  * a diferencia de atacar a un aliado, esto no cuenta como traición ni afecta
- * a `reputations`). No tiene efecto si no había alianza activa con ese ejército.
+ * a `reputations`). No tiene efecto si no había alianza activa con ese ejército,
+ * ni si el pacto sigue dentro de su ventana de protección
+ * (`ALLIANCE_PROTECTION_TURNS` turnos desde su formación) — en ese caso se
+ * ignora y se emite `alliance-protected` en su lugar.
  */
 export interface BreakAllianceIntent {
   kind: "break";
@@ -36,6 +39,21 @@ export function areAllied(state: GameState, a: ArmyId, b: ArmyId): boolean {
   return state.alliances.has(pairKey(a, b));
 }
 
+/** Turnos desde su formación durante los que un pacto no puede romperse (ni por `break` ni por ataque). */
+export const ALLIANCE_PROTECTION_TURNS = 5;
+
+/**
+ * `true` si `a` y `b` están aliados y su pacto sigue dentro de su ventana de
+ * protección (los `ALLIANCE_PROTECTION_TURNS` turnos siguientes a su
+ * formación, incluyendo el propio turno de formación). Durante esta ventana
+ * el pacto no se puede romper ni por `break` explícito ni por traición.
+ */
+export function isProtected(state: GameState, a: ArmyId, b: ArmyId): boolean {
+  const formedTurn = state.alliances.get(pairKey(a, b));
+  if (formedTurn === undefined) return false;
+  return state.turn - formedTurn < ALLIANCE_PROTECTION_TURNS;
+}
+
 /**
  * Resuelve las intenciones diplomáticas de un turno: primero las roturas
  * explícitas ("break"), luego forma una alianza cuando dos ejércitos se
@@ -52,9 +70,18 @@ export function resolveDiplomacy(
     for (const intent of intents) {
       if (intent.kind !== "break") continue;
       const key = pairKey(armyId, intent.withArmyId);
-      if (state.alliances.delete(key)) {
-        events.push({ kind: "alliance-broken", a: armyId, b: intent.withArmyId });
+      if (!state.alliances.has(key)) continue;
+      if (isProtected(state, armyId, intent.withArmyId)) {
+        events.push({
+          kind: "alliance-protected",
+          a: armyId,
+          b: intent.withArmyId,
+          unprotectedAtTurn: state.alliances.get(key)! + ALLIANCE_PROTECTION_TURNS,
+        });
+        continue;
       }
+      state.alliances.delete(key);
+      events.push({ kind: "alliance-broken", a: armyId, b: intent.withArmyId });
     }
   }
 
@@ -73,7 +100,7 @@ export function resolveDiplomacy(
       if (state.alliances.has(key) || formedPairs.has(key)) continue;
       const reciprocal = proposals.has(`${intent.withArmyId}>${armyId}`);
       if (reciprocal) {
-        state.alliances.add(key);
+        state.alliances.set(key, state.turn);
         formedPairs.add(key);
         events.push({
           kind: "alliance-formed",
