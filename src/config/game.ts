@@ -2,8 +2,12 @@
 export const GAME_CONFIG = {
   /** Puntos disponibles para formar cada ejército en la fase de preparación. */
   budget: 1600,
-  /** Número máximo de turnos de la fase de batalla. */
+  /** Número máximo de turnos de la fase de batalla (valor por defecto; ajustable en UI). */
   maxTurns: 30,
+  /** Límite inferior del control de turnos en la UI. */
+  minTurns: 10,
+  /** Límite superior del control de turnos en la UI. */
+  maxTurnsLimit: 200,
   /** Lado del campo de batalla (cuadrado) en unidades de mundo. */
   fieldSize: 1200,
   /** Nº de ejércitos por defecto (configurable entre min y max). */

@@ -5,6 +5,7 @@ export interface ControlCallbacks {
   onStep: () => void;
   onRestart: (armyCount: number) => void;
   onSpeed: (multiplier: number) => void;
+  onMaxTurns: (n: number) => void;
 }
 
 /** Barra de controles: play/pausa, paso a paso, reinicio, nº ejércitos y velocidad. */
@@ -42,11 +43,29 @@ export class Controls {
     speed.addEventListener("input", () => this.cb.onSpeed(Number(speed.value)));
     const speedLabel = label("Velocidad:", speed);
 
+    const turnsInput = document.createElement("input");
+    turnsInput.type = "number";
+    turnsInput.min = String(GAME_CONFIG.minTurns);
+    turnsInput.max = String(GAME_CONFIG.maxTurnsLimit);
+    turnsInput.step = "5";
+    turnsInput.value = String(GAME_CONFIG.maxTurns);
+    turnsInput.style.width = "60px";
+    turnsInput.addEventListener("change", () => {
+      const n = Math.max(
+        GAME_CONFIG.minTurns,
+        Math.min(GAME_CONFIG.maxTurnsLimit, Number(turnsInput.value) || GAME_CONFIG.maxTurns),
+      );
+      turnsInput.value = String(n);
+      this.cb.onMaxTurns(n);
+    });
+    const turnsLabel = label("Turnos:", turnsInput);
+
     container.append(
       this.playBtn,
       this.stepBtn,
       restartBtn,
       armyLabel,
+      turnsLabel,
       speedLabel,
     );
   }

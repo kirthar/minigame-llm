@@ -4,6 +4,7 @@ import { UNIT_DEFS } from "../config/units.ts";
 import { GameEngine } from "../engine/GameEngine.ts";
 import type { TurnResult } from "../engine/GameEngine.ts";
 import { Phase } from "../domain/types.ts";
+import type { UnitId } from "../domain/types.ts";
 import { ARMY_COLOR_CACHE, CanvasRenderer } from "../render/CanvasRenderer.ts";
 import { Controls } from "../ui/Controls.ts";
 import { EventLog } from "../ui/EventLog.ts";
@@ -19,11 +20,14 @@ export class Simulation {
 
   private playing = false;
   private speed = 1;
+  private maxTurns: number = GAME_CONFIG.maxTurns;
   private active: { result: TurnResult; elapsed: number } | null = null;
   private lastTs = 0;
+  private hoveredUnitId: UnitId | null = null;
+  private readonly tooltip: HTMLDivElement;
 
   constructor(
-    canvas: HTMLCanvasElement,
+    private readonly canvas: HTMLCanvasElement,
     controlsEl: HTMLElement,
     private readonly logEl: HTMLElement,
     private readonly statusEl: HTMLElement,
@@ -34,14 +38,69 @@ export class Simulation {
       onStep: () => this.step(),
       onRestart: (n) => this.restart(n),
       onSpeed: (m) => (this.speed = m),
+      onMaxTurns: (n) => { this.maxTurns = n; },
     });
+
+    this.tooltip = document.createElement("div");
+    this.tooltip.id = "unit-tooltip";
+    document.body.appendChild(this.tooltip);
+
+    canvas.addEventListener("mousemove", (e) => this.onMouseMove(e));
+    canvas.addEventListener("mouseleave", () => {
+      this.hoveredUnitId = null;
+      this.tooltip.style.display = "none";
+    });
+
     this.restart(GAME_CONFIG.defaultArmies);
     requestAnimationFrame((ts) => this.frame(ts));
   }
 
+  private onMouseMove(e: MouseEvent): void {
+    const rect = this.canvas.getBoundingClientRect();
+    const cssToCanvas = this.canvas.width / rect.width;
+    const canvasX = (e.clientX - rect.left) * cssToCanvas;
+    const canvasY = (e.clientY - rect.top) * cssToCanvas;
+    const worldX = canvasX / this.renderer.scale;
+    const worldY = canvasY / this.renderer.scale;
+
+    const hitRadiusPx = 15;
+    let best: { id: UnitId; dist: number } | null = null;
+    for (const u of this.engine.state.units) {
+      if (!u.alive) continue;
+      const dx = (u.pos.x - worldX) * this.renderer.scale;
+      const dy = (u.pos.y - worldY) * this.renderer.scale;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist <= hitRadiusPx && (!best || dist < best.dist)) {
+        best = { id: u.id, dist };
+      }
+    }
+
+    if (best) {
+      this.hoveredUnitId = best.id;
+      const u = this.engine.state.units.find((x) => x.id === best!.id)!;
+      const stats = u.stats();
+      const army = this.engine.state.armyById(u.armyId);
+      const armyName = army ? `E${army.id} · ${army.name}` : `E${u.armyId}`;
+      this.tooltip.textContent = [
+        `${UNIT_DEFS[u.type].label} — ${armyName}`,
+        `Rango: ${u.rank}`,
+        `HP: ${u.hp} / ${stats.maxHp}`,
+        `Ataque: ${stats.attack}`,
+        `Alcance: ${stats.range}`,
+        `Armadura: ${stats.armor}`,
+      ].join("\n");
+      this.tooltip.style.display = "block";
+      this.tooltip.style.left = `${e.clientX + 14}px`;
+      this.tooltip.style.top = `${e.clientY - 8}px`;
+    } else {
+      this.hoveredUnitId = null;
+      this.tooltip.style.display = "none";
+    }
+  }
+
   private restart(armyCount: number): void {
     const agents = Array.from({ length: armyCount }, (_, i) => defaultAgentFor(i));
-    this.engine = new GameEngine(agents, { armyCount });
+    this.engine = new GameEngine(agents, { armyCount, maxTurns: this.maxTurns });
     this.engine.setup();
     this.active = null;
     this.playing = false;
@@ -90,10 +149,11 @@ export class Simulation {
         unitActions: this.active.result.unitActions,
         t,
         ts,
+        hoveredUnitId: this.hoveredUnitId,
       });
       if (t >= 1) this.active = null;
     } else {
-      this.renderer.draw(this.engine.state, { ts });
+      this.renderer.draw(this.engine.state, { ts, hoveredUnitId: this.hoveredUnitId });
     }
 
     if (this.engine.state.finished && this.playing) {
@@ -114,7 +174,7 @@ export class Simulation {
           : `Fin · Gana ${s.armyById(s.winner)?.name ?? s.winner} (turno ${s.turn})`;
     } else {
       const alive = s.livingArmyIds().length;
-      this.statusEl.textContent = `Turno ${s.turn}/${GAME_CONFIG.maxTurns} · ${alive} ejércitos en pie`;
+      this.statusEl.textContent = `Turno ${s.turn}/${this.maxTurns} · ${alive} ejércitos en pie`;
     }
   }
 

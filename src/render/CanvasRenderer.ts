@@ -16,6 +16,8 @@ export interface DrawOptions {
   ts?: number;
   /** Orden ejecutada por cada unidad este turno (para decidir el estado de animación). */
   unitActions?: Map<UnitId, OrderType>;
+  /** Id de la unidad sobre la que está el cursor (dibuja su círculo de alcance). */
+  hoveredUnitId?: UnitId | null;
 }
 
 const UNIT_RADIUS = 7;
@@ -25,7 +27,7 @@ const SPRITE_SIZE = UNIT_RADIUS * 4.4;
 /** Dibuja el campo de batalla y las unidades en un canvas 2D. */
 export class CanvasRenderer {
   private readonly ctx: CanvasRenderingContext2D;
-  private readonly scale: number;
+  readonly scale: number;
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
@@ -51,6 +53,24 @@ export class CanvasRenderer {
       const action = opts.unitActions?.get(unit.id);
       const moving = !!start && (start.x !== unit.pos.x || start.y !== unit.pos.y);
       this.drawUnit(unit, pos, start, ts, t, action, moving);
+    }
+
+    if (opts.hoveredUnitId) {
+      const hovered = state.units.find((u) => u.id === opts.hoveredUnitId && u.alive);
+      if (hovered) {
+        const start = opts.startPositions?.get(hovered.id);
+        const pos = this.displayPos(hovered, start, t);
+        const x = pos.x * this.scale;
+        const y = pos.y * this.scale;
+        const rangeRadius = hovered.stats().range * this.scale;
+        ctx.beginPath();
+        ctx.arc(x, y, rangeRadius, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(77,163,255,0.45)";
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([4, 4]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
     }
   }
 
